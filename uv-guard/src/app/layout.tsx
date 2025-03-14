@@ -50,7 +50,7 @@ export default function RootLayout({
                         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 13 5.7-5.326a.909.909 0 0 0 0-1.348L1 1"/>
                     </svg>
                   </Link>
-                  <Link href="/" className="flex items-center font-bold gap-4">
+                  <Link href="/pages/products" className="flex items-center font-bold gap-4">
                     <span className="text-[#533C9F]">SunSafe Products</span>
                     <svg className="w-3 h-3 text-[#533C9F] dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 8 14">
                         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 13 5.7-5.326a.909.909 0 0 0 0-1.348L1 1"/>

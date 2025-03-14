@@ -1,6 +1,7 @@
 'use client';
 import Image from "next/image";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 // import UVIndexChart from "./components/UVIndexChart";
 
 const UVIndexChart = dynamic(() => import("./components/UVIndexChart"), {
@@ -8,6 +9,8 @@ const UVIndexChart = dynamic(() => import("./components/UVIndexChart"), {
 });
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <div className="flex flex-col max-[1024px] items-center justify-center h-full gap-6">
       {/* 顶部紫色信息栏 */}
@@ -39,7 +42,9 @@ export default function Home() {
         </div>
         {/* 按钮 */}
         <div className="flex-1/3 flex items-end justify-end h-full py-4 px-3">
-          <button className="bg-[#063490] text-white font-semibold px-6 py-2 rounded-lg hover:bg-[#063490] transition">
+          <button 
+            onClick={() => router.push("/pages/uvTrend")}
+            className="bg-[#063490] text-white font-semibold px-6 py-2 rounded-lg hover:bg-[#063490] transition">
             Check UV levels based on your location
           </button>
         </div>
