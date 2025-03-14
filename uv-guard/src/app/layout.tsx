@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Link from "next/link";
 import Image from "next/image";
+import Providers from "./store/Providers";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -59,7 +60,9 @@ export default function RootLayout({
                 </div>
               </header>
               <main className="flex-1 overflow-scroll">
-                {children}
+                <Providers>
+                  {children}
+                </Providers>
               </main>
             </div>
           </body>

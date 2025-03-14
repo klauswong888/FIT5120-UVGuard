@@ -1,83 +1,83 @@
 "use client";
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import { useState, useEffect } from "react";
+import { PieChart, Pie, ResponsiveContainer } from "recharts";
+import { useAppSelector } from "@/app/store/hooks";
 
 const RADIAN = Math.PI / 180;
 
-// ✅ 定义数据类型
-interface PieData {
-  name: string;
-  value: number;
-}
-
-// ✅ 定义组件 Props 类型
-interface DotIndicatorProps {
-  value: number; // UV 指数
-  data: PieData[]; // 数据数组
-  cx: number; // 圆心 X 坐标
-  cy: number; // 圆心 Y 坐标
-  iR: number; // 内半径
-  oR: number; // 外半径
-  color: string; // 指示点颜色
-}
-
-// ✅ dotIndicator 函数定义（指示点计算）
-const dotIndicator = ({ value, data, cx, cy, iR, oR, color }: DotIndicatorProps) => {
-  let total = data.reduce((sum, item) => sum + item.value, 0); // 计算总和
-
-  // 计算指示点的角度
-  const ang = 180.0 * (1 - value / total);
-  const radians = -RADIAN * ang; // 转换为弧度
-
-  // 计算指示点的位置
-  const radius = (iR + oR) / 2; // 让点落在弧的中间
-  const x = cx + radius * Math.cos(radians);
-  const y = cy + radius * Math.sin(radians);
-
-  return <circle cx={x} cy={y} r={20} fill={color} stroke="none" />;
-};
-
-const data: PieData[] = [
-  { name: "A", value: 80 },
+// ✅ UV 颜色映射（渐变色）
+const UV_COLORS = [
+  { stop: "0%", color: "#00FF00" },   // 0-2 (低) 绿色
+  { stop: "25%", color: "#FFFF00" },  // 3-5 (中) 黄色
+  { stop: "50%", color: "#FFA500" },  // 6-7 (高) 橙色
+  { stop: "75%", color: "#FF4500" },  // 8-10 (非常高) 深橙
+  { stop: "100%", color: "#FF0000" }, // 11+ (极端) 红色
 ];
 
-const cx = 170;
-const cy = 150;
-const iR = 80;
-const oR = 100;
-const value = 50;
-
-const UVIndexChart = () => {
-    return (
-      <div className="w-full h-[75%]">
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-          <defs>
-            <radialGradient id="gradientColor" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#FF9D00" />
-              <stop offset="100%" stopColor="#FFA500" />
-            </radialGradient>
-          </defs>
-          <Pie
-              dataKey="value"
-              startAngle={180}
-              endAngle={0}
-              data={data}
-              cx={cx}
-              cy={cy}
-              innerRadius={iR}
-              outerRadius={oR}
-              // fill="url(#gradientColor)"
-              stroke="none"
-          >
-              {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill="url(#gradientColor)" />
-              ))}
-          </Pie>
-          {dotIndicator({ value, data, cx, cy, iR, oR, color: "#FFFFFF" })}
-        </PieChart>
-        </ResponsiveContainer>
-      </div>
-    );
+// ✅ UV Index 组件 Props
+interface UVIndexChartProps {
+  uvIndex: number; // 当前 UV 指数
 }
+
+// ✅ UV Index 半圆组件
+const UVIndexChart = () => {
+  const [dotPosition, setDotPosition] = useState({ x: 0, y: 0 });
+  const uvIndex = useAppSelector((state) => state.uv.uvIndex);
+
+  const maxUV = 12; // 最大 UV 指数
+  const cx = 170;
+  const cy = 150;
+  const iR = 80;
+  const oR = 100;
+  const dotSize = 16; // 指示点大小
+
+  // ✅ 计算 UV Cell 数据
+  const data = [{ name: "UV Scale", value: maxUV }];
+
+  // **计算指示点位置**
+  useEffect(() => {
+    const angle = 180 * (1 - uvIndex / maxUV); // 计算角度
+    const radians = -RADIAN * angle; // 转换为弧度
+    const radius = (iR + oR) / 2; // 让点落在弧的中间
+    const x = cx + radius * Math.cos(radians);
+    const y = cy + radius * Math.sin(radians);
+    
+    setDotPosition({ x, y });
+  }, [uvIndex]);
+
+  return (
+    <div className="w-full h-[75%]">
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          {/* ✅ 定义渐变色 */}
+          <defs>
+            <linearGradient id="uvGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+              {UV_COLORS.map((stop, index) => (
+                <stop key={index} offset={stop.stop} stopColor={stop.color} />
+              ))}
+            </linearGradient>
+          </defs>
+
+          {/* ✅ 渐变半圆 UV 颜色 */}
+          <Pie
+            dataKey="value"
+            startAngle={180}
+            endAngle={0}
+            data={data}
+            cx={cx}
+            cy={cy}
+            innerRadius={iR}
+            outerRadius={oR}
+            stroke="none"
+            fill="url(#uvGradient)"
+          />
+
+          {/* ✅ 指示点 (dot) 放大且颜色固定白色 */}
+          <circle cx={dotPosition.x} cy={dotPosition.y} r={dotSize} fill="#FFFFFF" stroke="none" />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};
 
 export default UVIndexChart;

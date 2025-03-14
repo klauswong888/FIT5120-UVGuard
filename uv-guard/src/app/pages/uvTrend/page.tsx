@@ -2,7 +2,9 @@
 import UvTrendChart from "@/app/components/UVTrendChart";
 import UVIndexChart from '@/app/components/UVIndexChart'
 import { useState, useEffect } from "react";
-import moment from "moment";
+import moment from "moment-timezone"
+import { useAppDispatch } from "@/app/store/hooks";
+import { setUVIndex } from "@/app/store/uvSlice";
 
 
 const DEFAULT_ADDRESS = "Melbourne, Australia";
@@ -18,6 +20,9 @@ const UvTrend = () => {
     const [lat, setLat] = useState<number | null>(null);
     const [lng, setLng] = useState<number | null>(null);
     const [timezone, setTimezone] = useState<string | null>(null);
+    const [currentUV, setCurrentUV] = useState<number>(0);
+
+    const dispatch = useAppDispatch();
 
     /** 🚀 页面加载时获取用户地理位置，并自动查询 UV 数据 */
     useEffect(() => {
@@ -90,7 +95,12 @@ const UvTrend = () => {
             const data = await res.json();
 
             if (!data.error) {
-                setUvData(formatUvData(data.uvData));
+                const formattedData = formatUvData(data.uvData);
+                setUvData(formattedData);
+                const nowHour = moment().tz(timezone).hour();
+                const currentUVIndex = formattedData.find((item) => parseInt(item.time.split(":")[0]) === nowHour);
+
+                dispatch(setUVIndex(currentUVIndex ? currentUVIndex.uvIndex : 0));
             } else {
                 alert("Failed to fetch UV data.");
             }
@@ -103,8 +113,18 @@ const UvTrend = () => {
 
     /** ⏳ 更新时间 */
     useEffect(() => {
-        setCurrentTime(`${moment().format("HH:mm")}, ${moment(selectedDate).format("DD MMM YYYY")}`);
-    }, [selectedDate]);
+        const updateTime = () => {
+        const validTimezone = timezone ?? "Australia/Melbourne";
+        const now = moment().tz(validTimezone);
+        const formattedDate = moment(selectedDate).tz(validTimezone).format("DD MMM YYYY");
+        setCurrentTime(`${now.format("HH:mm")}, ${formattedDate}`);
+        };
+        updateTime();
+
+        const interval = setInterval(updateTime, 60000);
+
+        return () => clearInterval(interval);
+    }, [timezone, selectedDate]);
 
     /** 📊 格式化 UV 数据 */
     const formatUvData = (rawData: number[]) => {
@@ -113,6 +133,21 @@ const UvTrend = () => {
             uvIndex: value,
         }));
     };
+
+    /** 🌞 监听 UV 数据 & 时间，实时获取当前 UV */
+    useEffect(() => {
+        if (!timezone || uvData.length === 0) return;
+
+        const validTimezone = timezone ?? "Australia/Melbourne";
+        const nowHour = moment().tz(validTimezone).hour(); // 获取当前小时数（0-23）
+
+        // 查找当前小时对应的 UV 值
+        const currentUVIndex = uvData.find((item) => parseInt(item.time.split(":")[0]) === nowHour);
+
+        dispatch(setUVIndex(currentUVIndex ? currentUVIndex.uvIndex : 0));
+        
+        setCurrentUV(currentUVIndex ? currentUVIndex.uvIndex : 0);
+    }, [uvData, timezone]);
 
   return (
     <div className="flex flex-col items-center h-full gap-6">
