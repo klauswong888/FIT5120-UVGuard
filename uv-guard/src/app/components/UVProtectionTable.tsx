@@ -15,7 +15,7 @@ const UVProtectionTable: React.FC<UVProtectionTableProps> = ({ config, data }) =
         {/* 表头 */}
         <div
             className="grid p-4 text-sm font-medium text-gray-900 border-t border-b border-gray-200 gap-x-16 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-            style={{ gridTemplateColumns: `auto repeat(${config.columns.length}, 1fr)` }}
+            style={{ gridTemplateColumns: `150px repeat(${config.columns.length}, 1fr)` }}
         >
           <div className="text-left text-lg font-bold">UV Rating</div>
           {config.columns.map((col) => (
@@ -27,7 +27,9 @@ const UVProtectionTable: React.FC<UVProtectionTableProps> = ({ config, data }) =
 
         {/* 表格内容（动态行） */}
         {config.rows.map((row) => (
-          <div key={row.key} className={`grid grid-cols-${config.columns.length + 1} px-4 py-5 text-sm text-gray-700 border-b border-gray-200 gap-x-8 dark:border-gray-700`}>
+          <div key={row.key} className="grid px-4 py-5 text-sm text-gray-700 border-b border-gray-200 gap-x-16 dark:border-gray-700"
+          style={{ gridTemplateColumns: `150px repeat(${config.columns.length}, 1fr)` }}
+          >
             {/* UV 级别 */}
             <div className="text-gray-900 dark:text-white font-bold">
               {row.label}
