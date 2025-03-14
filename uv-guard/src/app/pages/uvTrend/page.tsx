@@ -4,10 +4,14 @@ import UVIndexChart from '@/app/components/UVIndexChart'
 import { useState, useEffect } from "react";
 import moment from "moment";
 
-const DEFAULT_ADDRESS = "Melbourne, Australia"; 
-const UvTrend = () => { 
+
+const DEFAULT_ADDRESS = "Melbourne, Australia";
+const DEFAULT_LAT = -37.8136;
+const DEFAULT_LNG = 144.9631;
+
+const UvTrend = () => {
     const [location, setLocation] = useState(DEFAULT_ADDRESS);
-    const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD")); 
+    const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD"));
     const [currentTime, setCurrentTime] = useState("");
     const [uvData, setUvData] = useState<{ time: string; uvIndex: number }[]>([]);
     const [loading, setLoading] = useState(false);
@@ -15,68 +19,98 @@ const UvTrend = () => {
     const [lng, setLng] = useState<number | null>(null);
     const [timezone, setTimezone] = useState<string | null>(null);
 
-    // **获取用户地理位置**
+    /** 🚀 页面加载时获取用户地理位置，并自动查询 UV 数据 */
     useEffect(() => {
         if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-            const { latitude, longitude } = position.coords;
-            setLat(latitude);
-            setLng(longitude);
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    setLat(latitude);
+                    setLng(longitude);
 
-            // **调用后端 API 获取地址 + 时区**
-            const res = await fetch(`/api/location?lat=${latitude}&lng=${longitude}`);
-            const data = await res.json();
-
-            if (!data.error) {
-                setLocation(data.address || DEFAULT_ADDRESS); // ✅ 使用默认地址作为后备
-                setTimezone(data.timezone);
-                fetchUVTrends(data.address || DEFAULT_ADDRESS, latitude, longitude, selectedDate);
-            } else {
-                setLocation(DEFAULT_ADDRESS);
-                fetchUVTrends(DEFAULT_ADDRESS, latitude, longitude, selectedDate);
-            }
-            },
-            (error) => {
-            console.error("Geolocation error:", error);
-            setLocation(DEFAULT_ADDRESS); // ✅ 位置获取失败时使用默认地址
-            fetchUVTrends(DEFAULT_ADDRESS, -37.8136, 144.9631, selectedDate); // Melbourne 坐标
-            }
-        );
+                    // ✅ 直接用 lat/lng 调用 `/api/location`
+                    await fetchLocationData(null, latitude, longitude);
+                },
+                async () => {
+                    console.warn("User denied location access, using default.");
+                    setLocation(DEFAULT_ADDRESS);
+                    setLat(DEFAULT_LAT);
+                    setLng(DEFAULT_LNG);
+                    await fetchLocationData(DEFAULT_ADDRESS);
+                }
+            );
         } else {
-        alert("Geolocation is not supported by this browser.");
-        setLocation(DEFAULT_ADDRESS);
-        fetchUVTrends(DEFAULT_ADDRESS, -37.8136, 144.9631, selectedDate);
+            console.warn("Geolocation not supported, using default location.");
+            setLocation(DEFAULT_ADDRESS);
+            setLat(DEFAULT_LAT);
+            setLng(DEFAULT_LNG);
+            fetchUVTrends(DEFAULT_LAT, DEFAULT_LNG, selectedDate, "Australia/Melbourne");
         }
     }, []);
 
-    // 更新时间
+    /** 📌 通过坐标/地址获取 lat/lng & timezone，然后查询 UV 数据 */
+    const fetchLocationData = async (address?: string | null, lat?: number, lng?: number) => {
+        setLoading(true);
+        try {
+            const query = address
+                ? `address=${encodeURIComponent(address)}`
+                : `lat=${lat}&lng=${lng}`;
+            
+            const res = await fetch(`/api/location?${query}`);
+            const data = await res.json();
+
+            if (!data.error) {
+                setLocation(data.address || DEFAULT_ADDRESS); // ✅ 现在 API 也会返回 `address`
+                setLat(data.lat);
+                setLng(data.lng);
+                setTimezone(data.timezone);
+
+                // ✅ 直接查询 UV 数据
+                fetchUVTrends(data.lat, data.lng, selectedDate, data.timezone);
+            } else {
+                alert("Location not found.");
+            }
+        } catch (error) {
+            console.error("Error fetching location:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    /** 🌞 查询 UV 数据 */
+    const fetchUVTrends = async (lat: number, lng: number, date: string, timezone: string) => {
+        if (!lat || !lng || !timezone) {
+            alert("Please select a valid location first.");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/uv?lat=${lat}&lng=${lng}&date=${date}&timezone=${timezone}`);
+            const data = await res.json();
+
+            if (!data.error) {
+                setUvData(formatUvData(data.uvData));
+            } else {
+                alert("Failed to fetch UV data.");
+            }
+        } catch (error) {
+            console.error("Error fetching UV data:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    /** ⏳ 更新时间 */
     useEffect(() => {
         setCurrentTime(`${moment().format("HH:mm")}, ${moment(selectedDate).format("DD MMM YYYY")}`);
     }, [selectedDate]);
 
-    // **查询 UV 数据**
-    const fetchUVTrends = async (address: string, lat: number, lng: number, date: string) => {
-        setLoading(true);
-        try {
-        const uvRes = await fetch(`/api/uv?lat=${lat}&lng=${lng}&date=${date}`);
-        const uvData = await uvRes.json();
-
-        if (!uvData.error) {
-            setUvData(formatUvData(uvData.uvData));
-        }
-        } catch (error) {
-        console.error("Error fetching UV data:", error);
-        alert("Failed to fetch data");
-        } finally {
-        setLoading(false);
-        }
-    };
-    // **格式化 UV 数据**
+    /** 📊 格式化 UV 数据 */
     const formatUvData = (rawData: number[]) => {
         return rawData.map((value, index) => ({
-        time: `${index}:00`, // X 轴：小时
-        uvIndex: value,      // Y 轴：UV 指数
+            time: `${index}:00`, // X 轴：小时
+            uvIndex: value,
         }));
     };
 
@@ -106,7 +140,7 @@ const UvTrend = () => {
         </div>
         <button
           className="bg-purple-600 text-white px-4 py-2 rounded-md"
-          onClick={() => fetchUVTrends(location, lat!, lng!, selectedDate)}
+          onClick={() => fetchLocationData(location)}
           disabled={loading}
         >
           {loading ? "Loading..." : "View UV trends"}

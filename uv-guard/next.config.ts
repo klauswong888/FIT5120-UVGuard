@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   experimental: {
-    disableOptimizedLoading: true, // 关闭加载指示器
+    disableOptimizedLoading: true,
   },
   /* config options here */
   images: {
