@@ -181,21 +181,34 @@ const personalization = () => {
                     {/* UV Rays 图片和文字 */}
                     <div className="flex flex-col items-center">
                         <Image src="/UVImpact.jpeg" alt="UV Rays" width={400} height={300} objectFit="cover" />
-                        <div className="text-center mt-2">Different UV rays and theri depth of impact on the skin</div>
+                        <div className="text-center mt-2">
+                            <a href="https://healthmatch.io/blog/top-20-skin-cancer-hot-spots-in-the-world-and-why-theyre-on-the-list" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                                Different UV rays and their depth of impact on the skin
+                            </a>
+                        </div>
                     </div>
 
                     {/* Skin Cancer 图片和文字 */}
                     <div className="flex flex-col items-center">
                         <Image src="/skin_cancer.jpeg" alt="Skin Cancer" width={400} height={300} objectFit="cover" />
-                        <div className="text-center mt-2">Key facts about skin cancer in Australia</div>
+                        <div className="text-center mt-2">
+                            <a href="https://www.spotscreen.com.au/info-centre/skin-cancer-information/skin-cancer-facts/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                                Key facts about skin cancer in Australia
+                            </a>
+                        </div>
                     </div>
 
                     {/* UV Danger 图片和文字 */}
                     <div className="flex flex-col items-center">
-                        <Image src="/UVDanger.jpeg" alt="UV Danger" width={400} height={300} objectFit="cover" />
-                        <div className="text-center mt-2">The danger of UV</div>
+                        <Image src="/UVDanger.jpg" alt="UV Danger" width={400} height={300} objectFit="cover" />
+                        <div className="text-center mt-2">
+                            <a href="https://mieye.com/protecting-eyes-harmful-uv-rays/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                                The danger of UV
+                            </a>
+                        </div>
                     </div>
                 </div>
+
 
 
                 {/* Learn more link */}
