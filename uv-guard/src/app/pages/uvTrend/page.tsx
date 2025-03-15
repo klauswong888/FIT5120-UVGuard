@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import moment from "moment-timezone"
 import { useAppDispatch } from "@/app/store/hooks";
 import { setUVIndex } from "@/app/store/uvSlice";
+import { useRouter } from "next/navigation";
 
 
 const DEFAULT_ADDRESS = "Melbourne, Australia";
@@ -23,6 +24,7 @@ const UvTrend = () => {
     const [currentUV, setCurrentUV] = useState<number>(0);
 
     const dispatch = useAppDispatch();
+    const router = useRouter();
 
     /** 🚀 页面加载时获取用户地理位置，并自动查询 UV 数据 */
     useEffect(() => {
@@ -214,7 +216,9 @@ const UvTrend = () => {
                     </ul>
                 </div>
             </div>
-            <button className="bg-[#063490] text-white font-semibold px-2 py-2 rounded-lg hover:bg-[#063490] transition">
+            <button 
+                onClick={() => router.push("/pages/personalization")}
+                className="bg-[#063490] text-white font-semibold px-2 py-2 rounded-lg hover:bg-[#063490] transition">
                 See your personalized solutions
             </button>
         </div>
