@@ -3,7 +3,11 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import UVIndexChart from '@/app/components/UVIndexChart'
+import moment from "moment-timezone"
 
+const DEFAULT_ADDRESS = "Melbourne, Australia";
+const DEFAULT_LAT = -37.8136;
+const DEFAULT_LNG = 144.9631;
 
 const personalization = () => {
     const [skinTone, setSkinTone] = useState('');
@@ -12,6 +16,65 @@ const personalization = () => {
     const [countdown, setCountdown] = useState(28);
     const router = useRouter();
     const [currentTime, setCurrentTime] = useState("");
+    const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD"));
+    const [loading, setLoading] = useState(false);
+    const [lat, setLat] = useState<number | null>(null);
+    const [lng, setLng] = useState<number | null>(null);
+    const [timezone, setTimezone] = useState<string | null>(null);
+
+    /** 🚀 页面加载时获取用户地理位置，并自动查询 UV 数据 */
+    useEffect(() => {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    setLat(latitude);
+                    setLng(longitude);
+
+                    // ✅ 直接用 lat/lng 调用 `/api/location`
+                    await fetchLocationData(null, latitude, longitude);
+                },
+                async () => {
+                    console.warn("User denied location access, using default.");
+                    setLocation(DEFAULT_ADDRESS);
+                    setLat(DEFAULT_LAT);
+                    setLng(DEFAULT_LNG);
+                    await fetchLocationData(DEFAULT_ADDRESS);
+                }
+            );
+        } else {
+            console.warn("Geolocation not supported, using default location.");
+            setLocation(DEFAULT_ADDRESS);
+            setLat(DEFAULT_LAT);
+            setLng(DEFAULT_LNG);
+        }
+    }, []);
+
+    /** 📌 通过坐标/地址获取 lat/lng & timezone，然后查询 UV 数据 */
+    const fetchLocationData = async (address?: string | null, lat?: number, lng?: number) => {
+        setLoading(true);
+        try {
+            const query = address
+                ? `address=${encodeURIComponent(address)}`
+                : `lat=${lat}&lng=${lng}`;
+
+            const res = await fetch(`/api/location?${query}`);
+            const data = await res.json();
+
+            if (!data.error) {
+                setLocation(data.address || DEFAULT_ADDRESS); // ✅ 现在 API 也会返回 `address`
+                setLat(data.lat);
+                setLng(data.lng);
+                setTimezone(data.timezone);
+            } else {
+                alert("Location not found.");
+            }
+        } catch (error) {
+            console.error("Error fetching location:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="flex flex-col items-center h-full gap-6">
@@ -107,15 +170,42 @@ const personalization = () => {
             </div>
 
             {/* Facts section */}
-            <div className="border-t px-6 pt-4 text-sm">
-                <div className="text-purple-900 font-bold text-lg mb-2">Facts you need to know</div>
-                <div className="flex gap-4 overflow-x-auto">
-                    {/* <Image src="/uv_rays.png" alt="UV Rays" width={150} height={100} />
-                    <Image src="/skin_cancer_facts.png" alt="Skin Cancer" width={150} height={100} />
-                    <Image src="/uv_danger.png" alt="UV Danger" width={150} height={100} /> */}
+            <div className="w-full border-t px-6 pt-4 text-sm">
+                {/* 文字部分 */}
+                <div className="w-full text-center text-purple-900 font-bold text-lg mb-4">
+                    Facts you need to know
                 </div>
-                <p className="mt-2 text-right text-sm text-blue-700 cursor-pointer">&gt;&gt;&gt;Learn more about how to protect your skin</p>
+
+                {/* 图片部分 */}
+                <div className="flex justify-between gap-4">
+                    {/* UV Rays 图片和文字 */}
+                    <div className="flex flex-col items-center">
+                        <Image src="/UVImpact.jpeg" alt="UV Rays" width={400} height={300} objectFit="cover" />
+                        <div className="text-center mt-2">Different UV rays and theri depth of impact on the skin</div>
+                    </div>
+
+                    {/* Skin Cancer 图片和文字 */}
+                    <div className="flex flex-col items-center">
+                        <Image src="/skin_cancer.jpeg" alt="Skin Cancer" width={400} height={300} objectFit="cover" />
+                        <div className="text-center mt-2">Key facts about skin cancer in Australia</div>
+                    </div>
+
+                    {/* UV Danger 图片和文字 */}
+                    <div className="flex flex-col items-center">
+                        <Image src="/UVDanger.jpeg" alt="UV Danger" width={400} height={300} objectFit="cover" />
+                        <div className="text-center mt-2">The danger of UV</div>
+                    </div>
+                </div>
+
+
+                {/* Learn more link */}
+                <p className="mt-2 text-right text-sm text-blue-700 cursor-pointer">
+                    <a href="https://www.cancer.org.au/cancer-information/causes-and-prevention/sun-safety" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                        &gt;&gt;&gt;Learn more about how to protect your skin
+                    </a>
+                </p>
             </div>
+
         </div >
     );
 }
