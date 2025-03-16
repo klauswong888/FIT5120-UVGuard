@@ -35,11 +35,20 @@ const uvProtectionData = {
 
 
 const Products = () => {
-    return(
-        <div className="flex flex-col items-center justify-center h-full">
-            <UVProtectionTable config={uvTableConfig} data={uvProtectionData} />
-        </div>
-    )
+  return (
+    <div className="flex flex-col items-center justify-center h-full">
+      <UVProtectionTable config={uvTableConfig} data={uvProtectionData} />
+
+      <a
+        href="https://www.amazon.com.au/s?k=sun+protection+products&ref=nb_sb_noss"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-6 bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition"
+      >
+        Shop Sun Protection Products on Amazon
+      </a>
+    </div>
+  )
 }
 
 export default Products;
