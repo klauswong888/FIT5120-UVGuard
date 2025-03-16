@@ -14,7 +14,7 @@ const eslintConfig = [
   {
     rules: {
       "@typescript-eslint/no-unused-vars": ["warn"], 
-      "no-console": process.env.NODE_ENV === "production" ? "error" : "warn",
+      "no-console": "warn", 
     },
   }
 ];

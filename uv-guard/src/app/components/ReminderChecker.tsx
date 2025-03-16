@@ -25,9 +25,7 @@ const ReminderChecker = () => {
 
       while (nextReminder < now) {
         nextReminder.setMinutes(nextReminder.getMinutes() + frequency);
-        console.log(`🔄 Updated Next Reminder: ${nextReminder.toLocaleTimeString()}`);
       }
-      console.log(`✅ Final Next Reminder: ${nextReminder.toLocaleTimeString()}`);
       return nextReminder;
     };
 
@@ -36,10 +34,8 @@ const ReminderChecker = () => {
       console.log("🕒 Checking time:", now.toLocaleTimeString());
       const nextReminder = calculateNextReminder();
       if (!nextReminder) return;
-      console.log(`Checking at ${now.toLocaleTimeString()}, next reminder at ${nextReminder.toLocaleTimeString()}`);
 
       if (now.getTime() >= nextReminder.getTime() - 1000) {
-        console.log("🚨 Reminder Triggered! 🚨");
         setShowModal(true); // Show `Modal`
       }
     };

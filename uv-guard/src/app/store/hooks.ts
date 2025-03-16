@@ -1,9 +1,8 @@
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "./store";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { setRecommendation, setReapplyTime, setIsSafeToGoOut } from "./uvSlice";
 import { supabase } from "../utils/supabaseClient";
-import { useCallback } from "react";
 
 // Create type-safe Hooks
 export const useAppDispatch: () => AppDispatch = useDispatch;
@@ -55,7 +54,6 @@ export const useFetchRecommendations = () => {
         }
     }, [skinTone, dispatch]); 
 
-    // ✅ 依赖项正确，React 不会报错
     useEffect(() => {
         if (uvIndex !== null) {
             fetchUVRecommendation();

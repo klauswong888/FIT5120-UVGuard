@@ -44,7 +44,6 @@ const UvTrend = () => {
                     await fetchLocationData(null, latitude, longitude);
                 },
                 async () => {
-                    console.warn("User denied location access, using default.");
                     dispatch(setLocation(DEFAULT_ADDRESS));
                     setLat(DEFAULT_LAT);
                     setLng(DEFAULT_LNG);
@@ -52,13 +51,12 @@ const UvTrend = () => {
                 }
             );
         } else {
-            console.warn("Geolocation not supported, using default location.");
             dispatch(setLocation(DEFAULT_ADDRESS));
             setLat(DEFAULT_LAT);
             setLng(DEFAULT_LNG);
             fetchUVTrends(DEFAULT_LAT, DEFAULT_LNG, selectedDate, "Australia/Melbourne");
         }
-    }, []);
+    }, [dispatch]);
 
     /** 📌 Get lat/lng & timezone through coordinates/address, then query UV data */
     const fetchLocationData = async (address?: string | null, lat?: number, lng?: number) => {
@@ -132,7 +130,7 @@ const UvTrend = () => {
         const interval = setInterval(updateTime, 60000);
 
         return () => clearInterval(interval);
-    }, [timezone, selectedDate]);
+    }, [timezone, selectedDate, dispatch]);
 
     /** 📊 Format UV data */
     const formatUvData = (rawData: number[]) => {
