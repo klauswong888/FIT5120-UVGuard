@@ -14,11 +14,6 @@ const UV_COLORS = [
   { stop: "100%", color: "#FF0000" }, // 11+ (极端) 红色
 ];
 
-// ✅ UV Index 组件 Props
-interface UVIndexChartProps {
-  uvIndex: number; // 当前 UV 指数
-}
-
 // ✅ UV Index 半圆组件
 const UVIndexChart = () => {
   const [dotPosition, setDotPosition] = useState({ x: 0, y: 0 });

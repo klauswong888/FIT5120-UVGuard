@@ -1,80 +1,35 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import UVIndexChart from '@/app/components/UVIndexChart'
-import moment from "moment-timezone"
+import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
+import UVIndexChart from '@/app/components/UVIndexChart';
+import { setSkinTone } from "@/app/store/uvSlice";
+import { useFetchRecommendations } from "@/app/store/hooks";
 
-const DEFAULT_ADDRESS = "Melbourne, Australia";
-const DEFAULT_LAT = -37.8136;
-const DEFAULT_LNG = 144.9631;
 
 const personalization = () => {
-    const [skinTone, setSkinTone] = useState('');
-    const [location, setLocation] = useState('');
-    const [time, setTime] = useState('');
-    const [countdown, setCountdown] = useState(28);
+    const dispatch = useAppDispatch();
     const router = useRouter();
-    const [currentTime, setCurrentTime] = useState("");
-    const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD"));
-    const [loading, setLoading] = useState(false);
-    const [lat, setLat] = useState<number | null>(null);
-    const [lng, setLng] = useState<number | null>(null);
-    const [timezone, setTimezone] = useState<string | null>(null);
+    useFetchRecommendations();
 
-    /** 🚀 页面加载时获取用户地理位置，并自动查询 UV 数据 */
+    // ✅ 从 Redux 读取状态
+    const { skinTone, recommendation, isSafeToGoOut, reapplyTime } = useAppSelector(state => state.uv);
+    const location = useAppSelector(state => state.uv.location);
+    const selectedDate = useAppSelector(state => state.uv.date);
+    const currentTime = useAppSelector(state => state.uv.time);
+    const nextReminderIn = useAppSelector(state => state.reminder.nextReminderIn);
+    const [formattedDateTime, setFormattedDateTime] = useState("Loading...");
+
     useEffect(() => {
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(
-                async (position) => {
-                    const { latitude, longitude } = position.coords;
-                    setLat(latitude);
-                    setLng(longitude);
-
-                    // ✅ 直接用 lat/lng 调用 `/api/location`
-                    await fetchLocationData(null, latitude, longitude);
-                },
-                async () => {
-                    console.warn("User denied location access, using default.");
-                    setLocation(DEFAULT_ADDRESS);
-                    setLat(DEFAULT_LAT);
-                    setLng(DEFAULT_LNG);
-                    await fetchLocationData(DEFAULT_ADDRESS);
-                }
-            );
-        } else {
-            console.warn("Geolocation not supported, using default location.");
-            setLocation(DEFAULT_ADDRESS);
-            setLat(DEFAULT_LAT);
-            setLng(DEFAULT_LNG);
+        if (selectedDate && currentTime) {
+            setFormattedDateTime(`${currentTime}, ${selectedDate}`);
         }
-    }, []);
+    }, [selectedDate, currentTime]);
 
-    /** 📌 通过坐标/地址获取 lat/lng & timezone，然后查询 UV 数据 */
-    const fetchLocationData = async (address?: string | null, lat?: number, lng?: number) => {
-        setLoading(true);
-        try {
-            const query = address
-                ? `address=${encodeURIComponent(address)}`
-                : `lat=${lat}&lng=${lng}`;
-
-            const res = await fetch(`/api/location?${query}`);
-            const data = await res.json();
-
-            if (!data.error) {
-                setLocation(data.address || DEFAULT_ADDRESS); // ✅ 现在 API 也会返回 `address`
-                setLat(data.lat);
-                setLng(data.lng);
-                setTimezone(data.timezone);
-            } else {
-                alert("Location not found.");
-            }
-        } catch (error) {
-            console.error("Error fetching location:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    useEffect(() => {
+        console.log("Redux Skin Tone:", skinTone);
+    }, [skinTone]);
 
     return (
         <div className="flex flex-col items-center h-full gap-6">
@@ -97,8 +52,8 @@ const personalization = () => {
                     <div className="flex flex-col">
                         <label className="text-sm font-semibold mb-1">Skin Tone</label>
                         <select
-                            value={skinTone}
-                            onChange={(e) => setSkinTone(e.target.value)}
+                            value={skinTone || ""}
+                            onChange={(e) => dispatch(setSkinTone(e.target.value))}
                             className="border px-3 py-2 rounded-md text-sm"
                         >
                             <option value="">Select skin tone</option>
@@ -117,7 +72,7 @@ const personalization = () => {
                         <input
                             type="text"
                             value={location}
-                            onChange={(e) => setLocation(e.target.value)}
+                            readOnly // ✅ 让 Redux 控制，禁止手动修改
                             className="border px-3 py-2 rounded-md text-sm"
                             placeholder="Enter your city"
                         />
@@ -130,10 +85,10 @@ const personalization = () => {
                 <div className="flex-col items-center justify-center h-full w-1/3">
                     <div className="flex flex-col items-start w-full">
                         <p className="text-lg font-semibold text-purple-700">
-                            {currentTime}
+                            {formattedDateTime}
                         </p>
                         <p className="text-sm text-gray-600">
-                            {location ? location : "Enter location above"}
+                            {location || "Loading location..."}
                         </p>
                     </div>
                     <UVIndexChart />
@@ -144,17 +99,13 @@ const personalization = () => {
                     <div className="h-full flex flex-col text-center items-center justify-center">
                         <div>
                             <h2 className="text-xl font-bold text-purple-900">
-                                AVOID THE SUN!!
-                            </h2>
-                            <h2 className="text-xl font-bold text-purple-900">
-                                It is NOT a good time to go out
+                                {isSafeToGoOut ? "You can go outside safely!" : "Avoid the sun!!"}
                             </h2>
                         </div>
                         <div className="flex flex-1 items-center justify-center">
                             <ul className="mt-4 text-left list-disc list-inside text-black">
-                                <li>Apply SPF 50+ sunscreen</li>
-                                <li>Wear sunglasses</li>
-                                <li>Wear protective clothing</li>
+                                <li>{recommendation}</li>
+                                <li>Reapply sunscreen every {reapplyTime} minutes.</li>
                             </ul>
                         </div>
                     </div>
@@ -164,13 +115,17 @@ const personalization = () => {
                 <div className="w-1/3 h-full flex-1 flex flex-col justify-center items-center text-center">
                     <Image src="/timer.png" alt="timer" width={40} height={40} />
                     <p className="text-sm mt-2">You will need to reapply sunscreen in</p>
-                    <p className="text-3xl font-bold text-orange-500 mt-2">{countdown} mins</p>
-                    <button className="mt-4 bg-purple-700 text-white px-4 py-2 rounded-md font-semibold">Set your reminder</button>
+                    <p className="text-3xl font-bold text-orange-500 mt-2">
+                        {nextReminderIn !== null ? `${nextReminderIn} mins` : "N/A"}
+                    </p>
+                    <button 
+                        onClick={() => router.push("/pages/reminder")}
+                        className="mt-4 bg-purple-700 text-white px-4 py-2 rounded-md font-semibold">Set your reminder</button>
                 </div>
             </div>
 
             {/* Facts section */}
-            <div className="w-full border-t px-6 pt-4 text-sm">
+            <div className="h-1/3 w-full border-t px-6 pt-4 text-sm">
                 {/* 文字部分 */}
                 <div className="w-full text-center text-purple-900 font-bold text-lg mb-4">
                     Facts you need to know
@@ -208,9 +163,6 @@ const personalization = () => {
                         </div>
                     </div>
                 </div>
-
-
-
                 {/* Learn more link */}
                 <p className="mt-2 text-right text-sm text-blue-700 cursor-pointer">
                     <a href="https://www.cancer.org.au/cancer-information/causes-and-prevention/sun-safety" target="_blank" rel="noopener noreferrer" className="hover:underline">

@@ -3,8 +3,8 @@ import UvTrendChart from "@/app/components/UVTrendChart";
 import UVIndexChart from '@/app/components/UVIndexChart'
 import { useState, useEffect } from "react";
 import moment from "moment-timezone"
-import { useAppDispatch } from "@/app/store/hooks";
-import { setUVIndex } from "@/app/store/uvSlice";
+import { useAppDispatch, useAppSelector, useFetchRecommendations } from "@/app/store/hooks";
+import { setDate, setTime, setUVIndex, setLocation } from "@/app/store/uvSlice";
 import { useRouter } from "next/navigation";
 
 
@@ -13,15 +13,20 @@ const DEFAULT_LAT = -37.8136;
 const DEFAULT_LNG = 144.9631;
 
 const UvTrend = () => {
-    const [location, setLocation] = useState(DEFAULT_ADDRESS);
-    const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD"));
-    const [currentTime, setCurrentTime] = useState("");
+    
+    useFetchRecommendations();
+    const location = useAppSelector((state) => state.uv.location);
+    const selectedDate = useAppSelector((state) => state.uv.date);
+    const currentTime = useAppSelector((state) => state.uv.time);
     const [uvData, setUvData] = useState<{ time: string; uvIndex: number }[]>([]);
     const [loading, setLoading] = useState(false);
     const [lat, setLat] = useState<number | null>(null);
     const [lng, setLng] = useState<number | null>(null);
     const [timezone, setTimezone] = useState<string | null>(null);
     const [currentUV, setCurrentUV] = useState<number>(0);
+    const [formattedDateTime, setFormattedDateTime] = useState("Loading...");
+    const recommendation = useAppSelector(state => state.uv.recommendation);
+    const isSafeToGoOut = useAppSelector(state => state.uv.isSafeToGoOut);
 
     const dispatch = useAppDispatch();
     const router = useRouter();
@@ -40,7 +45,7 @@ const UvTrend = () => {
                 },
                 async () => {
                     console.warn("User denied location access, using default.");
-                    setLocation(DEFAULT_ADDRESS);
+                    dispatch(setLocation(DEFAULT_ADDRESS));
                     setLat(DEFAULT_LAT);
                     setLng(DEFAULT_LNG);
                     await fetchLocationData(DEFAULT_ADDRESS);
@@ -48,7 +53,7 @@ const UvTrend = () => {
             );
         } else {
             console.warn("Geolocation not supported, using default location.");
-            setLocation(DEFAULT_ADDRESS);
+            dispatch(setLocation(DEFAULT_ADDRESS));
             setLat(DEFAULT_LAT);
             setLng(DEFAULT_LNG);
             fetchUVTrends(DEFAULT_LAT, DEFAULT_LNG, selectedDate, "Australia/Melbourne");
@@ -67,7 +72,8 @@ const UvTrend = () => {
             const data = await res.json();
 
             if (!data.error) {
-                setLocation(data.address || DEFAULT_ADDRESS); // ✅ 现在 API 也会返回 `address`
+                const address = typeof data.address === "string" ? data.address : DEFAULT_ADDRESS;
+                dispatch(setLocation(address)); // ✅ 现在 API 也会返回 `address`
                 setLat(data.lat);
                 setLng(data.lng);
                 setTimezone(data.timezone);
@@ -118,8 +124,8 @@ const UvTrend = () => {
         const updateTime = () => {
             const validTimezone = timezone ?? "Australia/Melbourne";
             const now = moment().tz(validTimezone);
-            const formattedDate = moment(selectedDate).tz(validTimezone).format("DD MMM YYYY");
-            setCurrentTime(`${now.format("HH:mm")}, ${formattedDate}`);
+            dispatch(setTime(now.format("HH:mm")));
+            dispatch(setDate(moment(selectedDate).tz(validTimezone).format("YYYY-MM-DD")));
         };
         updateTime();
 
@@ -151,6 +157,12 @@ const UvTrend = () => {
         setCurrentUV(currentUVIndex ? currentUVIndex.uvIndex : 0);
     }, [uvData, timezone]);
 
+    useEffect(() => {
+        if (selectedDate && currentTime) {
+            setFormattedDateTime(`${currentTime}, ${selectedDate}`);
+        }
+    }, [selectedDate, currentTime]);
+
     return (
         <div className="flex flex-col items-center h-full gap-6">
             <div className="flex items-center justify-between w-full gap-6 px-4">
@@ -162,7 +174,7 @@ const UvTrend = () => {
                             className="border rounded-md px-2 py-1 text-center"
                             placeholder="Enter location"
                             value={location}
-                            onChange={(e) => setLocation(e.target.value)}
+                            onChange={(e) => dispatch(setLocation(e.target.value))}
                         />
                     </div>
                     <div className="flex items-center text-center gap-8">
@@ -171,7 +183,7 @@ const UvTrend = () => {
                             type="date"
                             className="border rounded-md px-2 py-1 text-center"
                             value={selectedDate}
-                            onChange={(e) => setSelectedDate(e.target.value)}
+                            onChange={(e) => dispatch(setDate(e.target.value))}
                         />
                     </div>
                 </div>
@@ -190,7 +202,7 @@ const UvTrend = () => {
                 <div className="flex-col items-center justify-center h-full w-1/2">
                     <div className="flex flex-col items-start w-full">
                         <p className="text-lg font-semibold text-purple-700">
-                            {currentTime}
+                            {formattedDateTime}
                         </p>
                         <p className="text-sm text-gray-600">
                             {location ? location : "Enter location above"}
@@ -202,17 +214,12 @@ const UvTrend = () => {
                     <div className="h-full flex flex-col text-center items-center justify-center">
                         <div>
                             <h2 className="text-xl font-bold text-purple-900">
-                                AVOID THE SUN!!
-                            </h2>
-                            <h2 className="text-xl font-bold text-purple-900">
-                                It is NOT a good time to go out
+                                {isSafeToGoOut ? "You can go outside safely!" : "Avoid the sun!!"}
                             </h2>
                         </div>
                         <div className="flex flex-1 items-center justify-center">
                             <ul className="mt-4 text-left list-disc list-inside text-black">
-                                <li>Apply SPF 50+ sunscreen</li>
-                                <li>Wear sunglasses</li>
-                                <li>Wear protective clothing</li>
+                                <li>{recommendation}</li>
                             </ul>
                         </div>
                     </div>

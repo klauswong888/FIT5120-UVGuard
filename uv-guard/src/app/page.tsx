@@ -70,7 +70,9 @@ export default function Home() {
         </div>
         {/* 右侧按钮 */}
         <div className="flex-1/4 flex items-end justify-end h-full py-4 px-3">
-          <button className="bg-[#063490] text-white font-semibold px-6 py-2 rounded-lg hover:bg-[#063490] transition">
+          <button 
+            onClick={() => router.push("/pages/personalization")}
+            className="bg-[#063490] text-white font-semibold px-6 py-2 rounded-lg hover:bg-[#063490] transition">
             Check your skin tones
           </button>
         </div>
