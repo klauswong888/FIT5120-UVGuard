@@ -8,7 +8,7 @@ import { setSkinTone } from "@/app/store/uvSlice";
 import { useFetchRecommendations } from "@/app/store/hooks";
 
 
-const personalization = () => {
+const Personalization = () => {
     const dispatch = useAppDispatch();
     const router = useRouter();
     useFetchRecommendations();
@@ -175,4 +175,4 @@ const personalization = () => {
     );
 }
 
-export default personalization;
+export default Personalization;

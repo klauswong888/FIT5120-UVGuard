@@ -2,7 +2,7 @@
 import Image from 'next/image';
 
 
-const impact = () => {
+const Impact = () => {
     return (
         <div className="flex flex-col items-center h-full gap-6">
             <div className="w-full max-w-[900px]">
@@ -19,4 +19,4 @@ const impact = () => {
 };
 
 
-export default impact;
+export default Impact;

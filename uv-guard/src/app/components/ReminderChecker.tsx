@@ -18,7 +18,7 @@ const ReminderChecker = () => {
       const frequency = reminder.frequency || 5;
 
       const now = new Date();
-      let nextReminder = new Date();
+      const nextReminder = new Date();
       nextReminder.setHours(hours, minutes, 0);
       nextReminder.setSeconds(0); // Ensure seconds are 0
       console.log(`⏰ Initial Reminder Time: ${nextReminder.toLocaleTimeString()}`);
