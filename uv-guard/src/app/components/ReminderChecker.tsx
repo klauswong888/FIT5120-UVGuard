@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
 import { snoozeReminder, stopReminder } from "@/app/store/reminderSlice";
-import ReminderModal from "@/app/components/ReminderModal"; // ✅ 确保 `ReminderModal.tsx` 存在
+import ReminderModal from "@/app/components/ReminderModal"; // Ensure `ReminderModal.tsx` exists
 
 const ReminderChecker = () => {
   const dispatch = useAppDispatch();
@@ -20,7 +20,7 @@ const ReminderChecker = () => {
       const now = new Date();
       let nextReminder = new Date();
       nextReminder.setHours(hours, minutes, 0);
-      nextReminder.setSeconds(0); // 确保秒数为 0
+      nextReminder.setSeconds(0); // Ensure seconds are 0
       console.log(`⏰ Initial Reminder Time: ${nextReminder.toLocaleTimeString()}`);
 
       while (nextReminder < now) {
@@ -40,7 +40,7 @@ const ReminderChecker = () => {
 
       if (now.getTime() >= nextReminder.getTime() - 1000) {
         console.log("🚨 Reminder Triggered! 🚨");
-        setShowModal(true); // ✅ 显示 `Modal`
+        setShowModal(true); // Show `Modal`
       }
     };
 
@@ -51,12 +51,12 @@ const ReminderChecker = () => {
 
   const handleSnooze = () => {
     dispatch(snoozeReminder());
-    setShowModal(false); // ✅ 关闭 `Modal`
+    setShowModal(false); // Close `Modal`
   };
 
   const handleStop = () => {
     dispatch(stopReminder());
-    setShowModal(false); // ✅ 关闭 `Modal`
+    setShowModal(false); // Close `Modal`
   };
 
   return (

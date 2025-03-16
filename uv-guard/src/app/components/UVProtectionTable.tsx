@@ -12,7 +12,7 @@ const UVProtectionTable: React.FC<UVProtectionTableProps> = ({ config, data }) =
   return (
     <div className="bg-white w-full overflow-x-auto shadow-2xl">
       <div className="overflow-hidden min-w-max">
-        {/* 表头 */}
+        {/* Table Header */}
         <div
             className="grid p-4 text-sm font-medium text-gray-900 border-t border-b border-gray-200 gap-x-16 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
             style={{ gridTemplateColumns: `150px repeat(${config.columns.length}, 1fr)` }}
@@ -25,16 +25,16 @@ const UVProtectionTable: React.FC<UVProtectionTableProps> = ({ config, data }) =
           ))}
         </div>
 
-        {/* 表格内容（动态行） */}
+        {/* Table Content (Dynamic Rows) */}
         {config.rows.map((row) => (
           <div key={row.key} className="grid px-4 py-5 text-sm text-gray-700 border-b border-gray-200 gap-x-16 dark:border-gray-700"
           style={{ gridTemplateColumns: `150px repeat(${config.columns.length}, 1fr)` }}
           >
-            {/* UV 级别 */}
+            {/* UV Level */}
             <div className="text-gray-900 dark:text-white font-bold">
               {row.label}
             </div>
-            {/* 动态渲染单元格 */}
+            {/* Dynamically Render Cells */}
             {config.columns.map((col) => (
               <div key={col.key} className="flex justify-center">
                 {data[row.key]?.[col.key] ? (

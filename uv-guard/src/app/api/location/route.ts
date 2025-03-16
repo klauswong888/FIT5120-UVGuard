@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 const GOOGLE_API_KEY = process.env.GOOGLE_PLACES_KEY; 
 
-// 通过 Google API 获取地址的经纬度
+// Get latitude and longitude from address using Google API
 const fetchCoordinates = async (address: string) => {
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GOOGLE_API_KEY}`;
   const res = await fetch(url);
@@ -15,7 +15,7 @@ const fetchCoordinates = async (address: string) => {
   return null;
 };
 
-// 通过 Google API 获取时区
+// Get timezone using Google API
 const fetchTimeZone = async (lat: number, lng: number) => {
   const timestamp = Math.floor(Date.now() / 1000);
   const url = `https://maps.googleapis.com/maps/api/timezone/json?location=${lat},${lng}&timestamp=${timestamp}&key=${GOOGLE_API_KEY}`;
@@ -24,7 +24,7 @@ const fetchTimeZone = async (lat: number, lng: number) => {
   return data.timeZoneId || "UTC";
 };
 
-// 通过 Google API 获取经纬度对应的地址
+// Get address from latitude and longitude using Google API
 const fetchAddressFromCoords = async (lat: number, lng: number) => {
   const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_API_KEY}`;
   const res = await fetch(url);
@@ -36,7 +36,7 @@ const fetchAddressFromCoords = async (lat: number, lng: number) => {
   return null;
 };
 
-// 处理 API 请求
+// Handle API request
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const address = searchParams.get("address");
@@ -61,7 +61,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Missing address or coordinates" }, { status: 400 });
   }
 
-  // 确保 coordinates 存在
+  // Ensure coordinates exist
   if (!coordinates) {
     return NextResponse.json({ error: "Invalid location data" }, { status: 400 });
   }

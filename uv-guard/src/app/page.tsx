@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 // import UVIndexChart from "./components/UVIndexChart";
 
 const UVIndexChart = dynamic(() => import("./components/UVIndexChart"), {
-  ssr: false, // 禁用服务器端渲染（SSR）
+  ssr: false, // Disable server-side rendering (SSR)
 });
 
 export default function Home() {
@@ -13,17 +13,17 @@ export default function Home() {
 
   return (
     <div className="flex flex-col max-[1024px] items-center justify-center h-full gap-6">
-      {/* 顶部紫色信息栏 */}
+      {/* Top purple information bar */}
       <div className="flex items-center justify-center w-full h-1/5 bg-[#533C9F] text-white text-center py-4 px-6">
         <p className="text-lg font-semibold">
           We created this platform for people like you—those who are concerned about UV exposure and the risk of Vitamin D deficiency.
         </p>
       </div>
-      {/* 中间提示语 */}
+      {/* Middle prompt */}
       <div className="w-full text-center py-4 text-lg font-semibold text-[#533C9F]">
         Stay informed, stay protected, and make sun safety a habit!
       </div>
-      {/* UV 指数推荐卡片 */}
+      {/* UV index recommendation card */}
       <div className="w-full h-1/3 bg-[#E0DBFA] text-center flex items-center gap-4 shadow-md">
         <div className="flex-1/3 flex-col items-center justify-center">
           <h2 className="text-2xl font-bold text-purple-900">
@@ -36,11 +36,11 @@ export default function Home() {
             undetectable by touch.
           </h2>
         </div>
-        {/* 半圆 UV 保护推荐 */}
+        {/* Semi-circle UV protection recommendation */}
         <div className="flex-1/3 flex items-center justify-center h-full w-full">
           <UVIndexChart />
         </div>
-        {/* 按钮 */}
+        {/* Button */}
         <div className="flex-1/3 flex items-end justify-end h-full py-4 px-3">
           <button 
             onClick={() => router.push("/pages/uvTrend")}
@@ -50,7 +50,7 @@ export default function Home() {
         </div>
       </div>
       <div className="w-full h-1/3 bg-[#FDE1BF] text-center flex items-center gap-4 shadow-md">
-        {/* 左侧图片 */}
+        {/* Left image */}
         <div className="relative w-1/4 h-full">
           <Image 
             src="/homePage.png" 
@@ -59,7 +59,7 @@ export default function Home() {
             className="object-fit"
           />
         </div>
-        {/* 文字内容 */}
+        {/* Text content */}
         <div className="flex-1/2 text-center">
           <h2 className="text-2xl font-bold text-[#063490]">
             Choose the right sun protection for your skin tone early
@@ -68,7 +68,7 @@ export default function Home() {
             — protect yourself, prevent skin cancer!
           </p>
         </div>
-        {/* 右侧按钮 */}
+        {/* Right button */}
         <div className="flex-1/4 flex items-end justify-end h-full py-4 px-3">
           <button 
             onClick={() => router.push("/pages/personalization")}

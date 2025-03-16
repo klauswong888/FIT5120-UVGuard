@@ -5,6 +5,11 @@ const nextConfig: NextConfig = {
   experimental: {
     disableOptimizedLoading: true,
   },
+  compiler: {
+    removeConsole: {
+      exclude: ["error", "warn"], // ✅ 仅保留 error 和 warn
+    },
+  },
   /* config options here */
   images: {
     remotePatterns: [

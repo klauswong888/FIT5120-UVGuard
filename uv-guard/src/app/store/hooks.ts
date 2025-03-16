@@ -2,25 +2,25 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "./store";
 import { useEffect } from "react";
 import { setRecommendation, setReapplyTime, setIsSafeToGoOut } from "./uvSlice";
-import {supabase} from "../utils/supabaseClient";
+import { supabase } from "../utils/supabaseClient";
 
-// 创建类型安全的 Hooks
+// Create type-safe Hooks
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
-// ✅ 添加 useFetchRecommendations Hook
+// ✅ Add useFetchRecommendations Hook
 export const useFetchRecommendations = () => {
     const dispatch = useAppDispatch();
     const { uvIndex, skinTone } = useAppSelector(state => state.uv);
 
-    // 查询 UV 建议
+    // Fetch UV recommendations
     useEffect(() => {
         if (uvIndex !== null) {
             fetchUVRecommendation();
         }
     }, [uvIndex]);
 
-    // 查询涂抹时间
+    // Fetch reapply time
     useEffect(() => {
         if (skinTone) {
             fetchReapplyTime();
@@ -34,9 +34,9 @@ export const useFetchRecommendations = () => {
             const { data, error } = await supabase
                 .from("uv_recommendations")
                 .select("recommendation, is_safe_to_go_out")
-                .lte("uv_min", uvIndex)  // ✅ UV index 必须大于等于最小值
-                .gte("uv_max", uvIndex)  // ✅ UV index 必须小于等于最大值
-                .maybeSingle();  // 🔥 避免 "multiple rows" 错误
+                .lte("uv_min", uvIndex)  // ✅ UV index must be greater than or equal to the minimum value
+                .gte("uv_max", uvIndex)  // ✅ UV index must be less than or equal to the maximum value
+                .maybeSingle();  // 🔥 Avoid "multiple rows" error
 
             if (error) {
                 console.error("Error fetching UV recommendation:", error);

@@ -1,31 +1,31 @@
 // uvSlice.ts (Redux 状态管理)
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// 定义 UV Index 状态类型
+// Define UV Index state type
 interface UVState {
   uvIndex: number;
   location: string;
   date: string;
   time: string;
   skinTone: string; 
-  recommendation: string;  // ✅ UV 建议
-  reapplyTime: number;  // ✅ 防晒霜重新涂抹时间 (单位：分钟)
+  recommendation: string;  // UV recommendation
+  reapplyTime: number;  // Sunscreen reapplication time (in minutes)
   isSafeToGoOut: boolean;
 }
 
-// 初始状态
+// Initial state
 const initialState: UVState = {
   uvIndex: 0,
   location: "Melbourne, Australia",
-  date: new Date().toISOString().split("T")[0], // 默认当天
+  date: new Date().toISOString().split("T")[0], // Default to today
   time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
   skinTone: '',
-  recommendation: "No recommendation available", // 默认
-  reapplyTime: 0, // 默认无数据
+  recommendation: "No recommendation available", // Default
+  reapplyTime: 0, // Default no data
   isSafeToGoOut: true,
 };
 
-// 创建 Redux Slice
+// Create Redux Slice
 const uvSlice = createSlice({
   name: "uv",
   initialState,
@@ -57,8 +57,8 @@ const uvSlice = createSlice({
   },
 });
 
-// 导出 Action
+// Export Actions
 export const { setUVIndex, setLocation, setDate, setTime, setSkinTone, setRecommendation, setReapplyTime, setIsSafeToGoOut } = uvSlice.actions;
 
-// 导出 Reducer
+// Export Reducer
 export default uvSlice.reducer;

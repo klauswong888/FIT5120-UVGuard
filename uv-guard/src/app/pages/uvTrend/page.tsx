@@ -31,7 +31,7 @@ const UvTrend = () => {
     const dispatch = useAppDispatch();
     const router = useRouter();
 
-    /** 🚀 页面加载时获取用户地理位置，并自动查询 UV 数据 */
+    /** 🚀 Get user's geolocation on page load and automatically query UV data */
     useEffect(() => {
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(
@@ -40,7 +40,7 @@ const UvTrend = () => {
                     setLat(latitude);
                     setLng(longitude);
 
-                    // ✅ 直接用 lat/lng 调用 `/api/location`
+                    // ✅ Directly use lat/lng to call `/api/location`
                     await fetchLocationData(null, latitude, longitude);
                 },
                 async () => {
@@ -60,7 +60,7 @@ const UvTrend = () => {
         }
     }, []);
 
-    /** 📌 通过坐标/地址获取 lat/lng & timezone，然后查询 UV 数据 */
+    /** 📌 Get lat/lng & timezone through coordinates/address, then query UV data */
     const fetchLocationData = async (address?: string | null, lat?: number, lng?: number) => {
         setLoading(true);
         try {
@@ -73,12 +73,12 @@ const UvTrend = () => {
 
             if (!data.error) {
                 const address = typeof data.address === "string" ? data.address : DEFAULT_ADDRESS;
-                dispatch(setLocation(address)); // ✅ 现在 API 也会返回 `address`
+                dispatch(setLocation(address)); // ✅ Now the API will also return `address`
                 setLat(data.lat);
                 setLng(data.lng);
                 setTimezone(data.timezone);
 
-                // ✅ 直接查询 UV 数据
+                // ✅ Directly query UV data
                 fetchUVTrends(data.lat, data.lng, selectedDate, data.timezone);
             } else {
                 alert("Location not found.");
@@ -90,7 +90,7 @@ const UvTrend = () => {
         }
     };
 
-    /** 🌞 查询 UV 数据 */
+    /** 🌞 Query UV data */
     const fetchUVTrends = async (lat: number, lng: number, date: string, timezone: string) => {
         if (!lat || !lng || !timezone) {
             alert("Please select a valid location first.");
@@ -119,7 +119,7 @@ const UvTrend = () => {
         }
     };
 
-    /** ⏳ 更新时间 */
+    /** ⏳ Update time */
     useEffect(() => {
         const updateTime = () => {
             const validTimezone = timezone ?? "Australia/Melbourne";
@@ -134,22 +134,22 @@ const UvTrend = () => {
         return () => clearInterval(interval);
     }, [timezone, selectedDate]);
 
-    /** 📊 格式化 UV 数据 */
+    /** 📊 Format UV data */
     const formatUvData = (rawData: number[]) => {
         return rawData.map((value, index) => ({
-            time: `${index}:00`, // X 轴：小时
+            time: `${index}:00`, // X-axis: hour
             uvIndex: value,
         }));
     };
 
-    /** 🌞 监听 UV 数据 & 时间，实时获取当前 UV */
+    /** 🌞 Monitor UV data & time, get current UV in real-time */
     useEffect(() => {
         if (!timezone || uvData.length === 0) return;
 
         const validTimezone = timezone ?? "Australia/Melbourne";
-        const nowHour = moment().tz(validTimezone).hour(); // 获取当前小时数（0-23）
+        const nowHour = moment().tz(validTimezone).hour(); // Get current hour (0-23)
 
-        // 查找当前小时对应的 UV 值
+        // Find the UV value corresponding to the current hour
         const currentUVIndex = uvData.find((item) => parseInt(item.time.split(":")[0]) === nowHour);
 
         dispatch(setUVIndex(currentUVIndex ? currentUVIndex.uvIndex : 0));

@@ -13,7 +13,7 @@ const personalization = () => {
     const router = useRouter();
     useFetchRecommendations();
 
-    // ✅ 从 Redux 读取状态
+    // ✅ Read state from Redux
     const { skinTone, recommendation, isSafeToGoOut, reapplyTime } = useAppSelector(state => state.uv);
     const location = useAppSelector(state => state.uv.location);
     const selectedDate = useAppSelector(state => state.uv.date);
@@ -33,9 +33,9 @@ const personalization = () => {
 
     return (
         <div className="flex flex-col items-center h-full gap-6">
-            {/* Skin tone 图片 + 下拉选择区域 */}
+            {/* Skin tone image + dropdown selection area */}
             <div className="flex flex-col md:flex-row justify-between px-2 py-2 gap-4 md:gap-8 w-full items-center">
-                {/* 左侧图片 */}
+                {/* Left side image */}
                 <div className="w-full md:w-[60%] max-w-[900px]">
                     <Image
                         src="/skin_tone.png"
@@ -46,9 +46,9 @@ const personalization = () => {
                     />
                 </div>
 
-                {/* 右侧选择框（垂直排列） */}
+                {/* Right side selection box (vertical arrangement) */}
                 <div className="h-full md:w-[45%] max-w-[500px] flex flex-col justify-between px-4 py-4 gap-4">
-                    {/* Skin tone 下拉菜单 */}
+                    {/* Skin tone dropdown menu */}
                     <div className="flex flex-col">
                         <label className="text-sm font-semibold mb-1">Skin Tone</label>
                         <select
@@ -66,13 +66,13 @@ const personalization = () => {
                         </select>
                     </div>
 
-                    {/* Location 输入框 */}
+                    {/* Location input box */}
                     <div className="flex flex-col">
                         <label className="text-sm font-semibold mb-1">Location</label>
                         <input
                             type="text"
                             value={location}
-                            readOnly // ✅ 让 Redux 控制，禁止手动修改
+                            readOnly // ✅ Controlled by Redux, manual modification prohibited
                             className="border px-3 py-2 rounded-md text-sm"
                             placeholder="Enter your city"
                         />
@@ -80,7 +80,7 @@ const personalization = () => {
                 </div>
             </div>
 
-            {/* UV index 圆环 & 建议内容 & 倒计时 */}
+            {/* UV index circle & recommendation content & countdown */}
             <div className="flex h-1/2 w-full rounded-xl p-4 bg-gray-200 gap-4">
                 <div className="flex-col items-center justify-center h-full w-1/3">
                     <div className="flex flex-col items-start w-full">
@@ -94,7 +94,7 @@ const personalization = () => {
                     <UVIndexChart />
                 </div>
 
-                {/* 建议信息 */}
+                {/* Recommendation information */}
                 <div className="w-1/3 h-full bg-[#E0DBFA] flex flex-col items-center py-2">
                     <div className="h-full flex flex-col text-center items-center justify-center">
                         <div>
@@ -111,7 +111,7 @@ const personalization = () => {
                     </div>
                 </div>
 
-                {/* 倒计时 & 按钮 */}
+                {/* Countdown & button */}
                 <div className="w-1/3 h-full flex-1 flex flex-col justify-center items-center text-center">
                     <Image src="/timer.png" alt="timer" width={40} height={40} />
                     <p className="text-sm mt-2">You will need to reapply sunscreen in</p>
@@ -126,14 +126,14 @@ const personalization = () => {
 
             {/* Facts section */}
             <div className="h-1/3 w-full border-t px-6 pt-4 text-sm">
-                {/* 文字部分 */}
+                {/* Text part */}
                 <div className="w-full text-center text-purple-900 font-bold text-lg mb-4">
                     Facts you need to know
                 </div>
 
-                {/* 图片部分 */}
+                {/* Image part */}
                 <div className="flex justify-between gap-4">
-                    {/* UV Rays 图片和文字 */}
+                    {/* UV Rays image and text */}
                     <div className="flex flex-col items-center">
                         <Image src="/UVImpact.jpeg" alt="UV Rays" width={400} height={300} objectFit="cover" />
                         <div className="text-center mt-2">
@@ -143,7 +143,7 @@ const personalization = () => {
                         </div>
                     </div>
 
-                    {/* Skin Cancer 图片和文字 */}
+                    {/* Skin Cancer image and text */}
                     <div className="flex flex-col items-center">
                         <Image src="/skin_cancer.jpeg" alt="Skin Cancer" width={400} height={300} objectFit="cover" />
                         <div className="text-center mt-2">
@@ -153,7 +153,7 @@ const personalization = () => {
                         </div>
                     </div>
 
-                    {/* UV Danger 图片和文字 */}
+                    {/* UV Danger image and text */}
                     <div className="flex flex-col items-center">
                         <Image src="/UVDanger.jpg" alt="UV Danger" width={400} height={300} objectFit="cover" />
                         <div className="text-center mt-2">

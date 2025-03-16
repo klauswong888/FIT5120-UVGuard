@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
 import { setReminder, stopReminder } from "@/app/store/reminderSlice";
 import Cookies from "js-cookie";
 
-// ✅ 表单验证规则 (Zod)
+// ✅ Form validation rules (Zod)
 const reminderSchema = z.object({
   timing: z.string().min(1, "Please select a reminder time"),
   frequency: z
@@ -15,7 +15,7 @@ const reminderSchema = z.object({
     .min(1, "Frequency must be at least 1 minute"),
 });
 
-// ✅ 提醒表单的类型
+// ✅ Type for the reminder form
 type ReminderFormType = z.infer<typeof reminderSchema>;
 
 const ReminderForm = () => {
@@ -36,7 +36,7 @@ const ReminderForm = () => {
     },
   });
 
-  // ✅ 组件加载时读取 Cookies 并更新表单
+  // ✅ Read Cookies and update form on component load
   useEffect(() => {
     const savedReminder = Cookies.get("reminder");
     if (savedReminder) {
@@ -50,7 +50,7 @@ const ReminderForm = () => {
     }
   }, [setValue]);
 
-  // ✅ 处理表单提交
+  // ✅ Handle form submission
   const onSubmit = (data: ReminderFormType) => {
     console.log("Dispatching setReminder with data:", data);
     dispatch(setReminder(data));
@@ -58,7 +58,7 @@ const ReminderForm = () => {
     console.log("Reminder set successfully!");
   };
 
-  // ✅ 停止提醒
+  // ✅ Stop reminder
   const handleStop = () => {
     dispatch(stopReminder());
     Cookies.remove("reminder");
@@ -93,12 +93,12 @@ const ReminderForm = () => {
         {errors.frequency && <p className="text-red-500 text-sm">{errors.frequency.message}</p>}
       </div>
 
-      {/* ✅ 按钮 */}
+      {/* ✅ Button */}
       <button type="submit" className="bg-blue-500 text-white p-2 rounded w-full mb-2">
         {reminder.active ? "Update Reminder" : "Set Reminder"}
       </button>
 
-      {/* 🛑 停止提醒按钮 */}
+      {/* 🛑 Stop Reminder Button */}
       <button
         type="button"
         onClick={handleStop}
