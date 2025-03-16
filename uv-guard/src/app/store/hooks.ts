@@ -3,6 +3,7 @@ import type { RootState, AppDispatch } from "./store";
 import { useEffect } from "react";
 import { setRecommendation, setReapplyTime, setIsSafeToGoOut } from "./uvSlice";
 import { supabase } from "../utils/supabaseClient";
+import { useCallback } from "react";
 
 // Create type-safe Hooks
 export const useAppDispatch: () => AppDispatch = useDispatch;
@@ -13,21 +14,7 @@ export const useFetchRecommendations = () => {
     const dispatch = useAppDispatch();
     const { uvIndex, skinTone } = useAppSelector(state => state.uv);
 
-    // Fetch UV recommendations
-    useEffect(() => {
-        if (uvIndex !== null) {
-            fetchUVRecommendation();
-        }
-    }, [uvIndex]);
-
-    // Fetch reapply time
-    useEffect(() => {
-        if (skinTone) {
-            fetchReapplyTime();
-        }
-    }, [skinTone]);
-
-    const fetchUVRecommendation = async () => {
+    const fetchUVRecommendation = useCallback(async () => {
         console.log("Fetching UV recommendation for uvIndex:", uvIndex);
 
         try {
@@ -54,9 +41,9 @@ export const useFetchRecommendations = () => {
         } catch (err) {
             console.error("Exception fetching UV recommendation:", err);
         }
-    };
+    }, [uvIndex, dispatch]); 
 
-    const fetchReapplyTime = async () => {
+    const fetchReapplyTime = useCallback(async () => {
         const { data, error } = await supabase
             .from("skin_tone_reapply")
             .select("reapply_time")
@@ -66,5 +53,18 @@ export const useFetchRecommendations = () => {
         if (!error && data) {
             dispatch(setReapplyTime(data.reapply_time));
         }
-    };
+    }, [skinTone, dispatch]); 
+
+    // ✅ 依赖项正确，React 不会报错
+    useEffect(() => {
+        if (uvIndex !== null) {
+            fetchUVRecommendation();
+        }
+    }, [uvIndex, fetchUVRecommendation]); 
+
+    useEffect(() => {
+        if (skinTone) {
+            fetchReapplyTime();
+        }
+    }, [skinTone, fetchReapplyTime]); 
 };

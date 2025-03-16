@@ -82,7 +82,7 @@ const calculateNextReminder = (timing: string, frequency: number): number | null
   
   const [hours, minutes] = timing.split(":").map(Number);
   const now = new Date();
-  let nextReminder = new Date();
+  const nextReminder = new Date();
   nextReminder.setHours(hours, minutes, 0);
 
   // ⏳ If the current time has already passed the set time, calculate the next reminder point
