@@ -13,7 +13,7 @@ const DEFAULT_LAT = -37.8136;
 const DEFAULT_LNG = 144.9631;
 
 const UvTrend = () => {
-    
+
     useFetchRecommendations();
     const location = useAppSelector((state) => state.uv.location);
     const selectedDate = useAppSelector((state) => state.uv.date);
@@ -166,7 +166,7 @@ const UvTrend = () => {
             <div className="flex items-center justify-between w-full gap-6 px-4">
                 <div className="flex items-center text-center gap-15">
                     <div className="flex items-center text-center gap-8">
-                        <label className="text-sm font-semibold">Location</label>
+                        <label className="text-sm font-semibold">Current Location</label>
                         <input
                             type="text"
                             className="border rounded-md px-2 py-1 text-center"
