@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 const GOOGLE_API_KEY = process.env.GOOGLE_PLACES_KEY; 
 
+
 // Get latitude and longitude from address using Google API
 const fetchCoordinates = async (address: string) => {
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GOOGLE_API_KEY}`;
