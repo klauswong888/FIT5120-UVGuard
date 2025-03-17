@@ -2,7 +2,6 @@
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import PasswordProtect from "@/app/components/PasswordProtect";
 // import UVIndexChart from "./components/UVIndexChart";
 
 const UVIndexChart = dynamic(() => import("./components/UVIndexChart"), {
@@ -13,7 +12,6 @@ export default function Home() {
   const router = useRouter();
 
   return (
-    <PasswordProtect>
       <div className="flex flex-col max-[1024px] items-center justify-center h-full gap-6">
         {/* Top purple information bar */}
         <div className="flex items-center justify-center w-full h-1/5 bg-[#533C9F] text-white text-center py-4 px-6">
@@ -80,6 +78,5 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </PasswordProtect>
   );
 }

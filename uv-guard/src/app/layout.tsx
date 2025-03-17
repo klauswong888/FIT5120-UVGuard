@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import Providers from "./store/Providers";
 import ReminderChecker from "@/app/components/ReminderChecker";
-import PasswordProtect from "@/app/components/PasswordProtect";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -34,7 +33,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <PasswordProtect>
           <div className="flex flex-col h-screen py-4 px-2 md:py-4 md:px-16 gap-8">
             <header className="flex items-center justify-between">
               <div className="flex items-center font-bold gap-8 text-2xl text-[#FF9D00]">
@@ -75,7 +73,6 @@ export default function RootLayout({
               </Providers>
             </main>
           </div>
-        </PasswordProtect>
       </body>
     </html>
   );
