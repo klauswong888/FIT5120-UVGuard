@@ -9,7 +9,7 @@ const Impact = () => {
 
                 <div className="flex flex-col justify-center items-center text-center">
                     <h2 className="text-xl font-semibold mb-4">
-                        Australia's skin cancer rate ranks first among 20 countries
+                        Australia skin cancer rate ranks first among 20 countries
                     </h2>
                     <Image
                         src="/impact.png"
