@@ -21,6 +21,7 @@ type ReminderFormType = z.infer<typeof reminderSchema>;
 const ReminderForm = () => {
   const dispatch = useAppDispatch();
   const reminder = useAppSelector((state) => state.reminder);
+  const nextReminderIn = useAppSelector(state => state.reminder.nextReminderIn);
 
   // ✅ React Hook Form + Zod
   const {
@@ -68,48 +69,55 @@ const ReminderForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="max-w-sm mx-auto">
-      <h2 className="text-lg font-semibold text-center">Set Reminder 🔔</h2>
+    <div className="flex flex-col h-full w-full items-center justify-center">
+      <form onSubmit={handleSubmit(onSubmit)} className="max-w-sm mx-auto">
+        <h2 className="text-lg font-semibold text-center">Set Reminder 🔔</h2>
 
-      {/* ⏰ Reminder Time */}
-      <div className="mb-5">
-        <label className="block mb-2 text-sm font-medium text-gray-900">Reminder Time:</label>
-        <input
-          type="time"
-          className="border p-2 w-full rounded"
-          {...register("timing")}
-        />
-        {errors.timing && <p className="text-red-500 text-sm">{errors.timing.message}</p>}
+        {/* ⏰ Reminder Time */}
+        <div className="mb-5">
+          <label className="block mb-2 text-sm font-medium text-gray-900">Reminder Time:</label>
+          <input
+            type="time"
+            className="border p-2 w-full rounded"
+            {...register("timing")}
+          />
+          {errors.timing && <p className="text-red-500 text-sm">{errors.timing.message}</p>}
+        </div>
+
+        {/* 🔄 Frequency */}
+        <div className="mb-5">
+          <label className="block mb-2 text-sm font-medium text-gray-900">Reminder Frequency (minutes):</label>
+          <input
+            type="number"
+            className="border p-2 w-full rounded"
+            {...register("frequency", { valueAsNumber: true })}
+          />
+          {errors.frequency && <p className="text-red-500 text-sm">{errors.frequency.message}</p>}
+        </div>
+
+        {/* ✅ Button */}
+        <button type="submit" className="bg-purple-600 text-white p-2 rounded w-full mb-2">
+          {reminder.active ? "Update Reminder" : "Set Reminder"}
+        </button>
+
+        {/* 🛑 Stop Reminder Button */}
+        <button
+          type="button"
+          onClick={handleStop}
+          className={`p-2 rounded w-full ${reminder.active ? "bg-red-500 text-white" : "bg-gray-400 text-gray-700 cursor-not-allowed"
+            }`}
+          disabled={!reminder.active}
+        >
+          Stop Reminder
+        </button>
+      </form>
+      <div className="h-1/3 flex flex-col justify-center items-center text-center">
+        <p className="text-sm mt-2">You will need to reapply sunscreen in</p>
+        <p className="text-3xl font-bold text-orange-500 mt-2">
+          {nextReminderIn !== null ? `${nextReminderIn} mins` : "N/A"}
+        </p>
       </div>
-
-      {/* 🔄 Frequency */}
-      <div className="mb-5">
-        <label className="block mb-2 text-sm font-medium text-gray-900">Reminder Frequency (minutes):</label>
-        <input
-          type="number"
-          className="border p-2 w-full rounded"
-          {...register("frequency", { valueAsNumber: true })}
-        />
-        {errors.frequency && <p className="text-red-500 text-sm">{errors.frequency.message}</p>}
-      </div>
-
-      {/* ✅ Button */}
-      <button type="submit" className="bg-blue-500 text-white p-2 rounded w-full mb-2">
-        {reminder.active ? "Update Reminder" : "Set Reminder"}
-      </button>
-
-      {/* 🛑 Stop Reminder Button */}
-      <button
-        type="button"
-        onClick={handleStop}
-        className={`p-2 rounded w-full ${
-          reminder.active ? "bg-red-500 text-white" : "bg-gray-400 text-gray-700 cursor-not-allowed"
-        }`}
-        disabled={!reminder.active}
-      >
-        Stop Reminder
-      </button>
-    </form>
+    </div>
   );
 };
 

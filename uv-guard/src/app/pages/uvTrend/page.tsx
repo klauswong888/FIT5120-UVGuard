@@ -1,7 +1,7 @@
 'use client';
 import UvTrendChart from "@/app/components/UVTrendChart";
 import UVIndexChart from '@/app/components/UVIndexChart'
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import moment from "moment-timezone"
 import { useAppDispatch, useAppSelector, useFetchRecommendations } from "@/app/store/hooks";
 import { setDate, setTime, setUVIndex, setLocation } from "@/app/store/uvSlice";
@@ -31,7 +31,7 @@ const UvTrend = () => {
     const dispatch = useAppDispatch();
     const router = useRouter();
 
-    /** 🚀 Get user's geolocation on page load and automatically query UV data */
+    /* Get user's geolocation on page load and automatically query UV data */
     useEffect(() => {
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(
@@ -40,7 +40,7 @@ const UvTrend = () => {
                     setLat(latitude);
                     setLng(longitude);
 
-                    // ✅ Directly use lat/lng to call `/api/location`
+                    // Directly use lat/lng to call `/api/location`
                     await fetchLocationData(null, latitude, longitude);
                 },
                 async () => {
@@ -58,7 +58,7 @@ const UvTrend = () => {
         }
     }, [dispatch]);
 
-    /** 📌 Get lat/lng & timezone through coordinates/address, then query UV data */
+    /* Get lat/lng & timezone through coordinates/address, then query UV data */
     const fetchLocationData = async (address?: string | null, lat?: number, lng?: number) => {
         setLoading(true);
         try {
@@ -71,12 +71,12 @@ const UvTrend = () => {
 
             if (!data.error) {
                 const address = typeof data.address === "string" ? data.address : DEFAULT_ADDRESS;
-                dispatch(setLocation(address)); // ✅ Now the API will also return `address`
+                dispatch(setLocation(address)); //  Now the API will also return `address`
                 setLat(data.lat);
                 setLng(data.lng);
                 setTimezone(data.timezone);
 
-                // ✅ Directly query UV data
+                //  Directly query UV data
                 fetchUVTrends(data.lat, data.lng, selectedDate, data.timezone);
             } else {
                 alert("Location not found.");
@@ -88,7 +88,7 @@ const UvTrend = () => {
         }
     };
 
-    /** 🌞 Query UV data */
+    /* Query UV data */
     const fetchUVTrends = async (lat: number, lng: number, date: string, timezone: string) => {
         if (!lat || !lng || !timezone) {
             alert("Please select a valid location first.");
@@ -117,15 +117,14 @@ const UvTrend = () => {
         }
     };
 
-    /** ⏳ Update time */
+    /* Update time */
     useEffect(() => {
         const updateTime = () => {
             const validTimezone = timezone ?? "Australia/Melbourne";
             const now = moment().tz(validTimezone);
             const newTime = now.format("HH:mm");
-            const newDate = now.format("YYYY-MM-DD"); // ✅ 直接用 now 格式化
+            const newDate = now.format("YYYY-MM-DD");
 
-            // 🛑 只有当状态真的变化时才 dispatch，避免 Redux 无限循环
             if (currentTime !== newTime) {
                 dispatch(setTime(newTime));
             }
@@ -140,7 +139,7 @@ const UvTrend = () => {
         return () => clearInterval(interval);
     }, [timezone, selectedDate, dispatch, currentTime]);
 
-    /** 📊 Format UV data */
+    /* Format UV data */
     const formatUvData = (rawData: number[]) => {
         return rawData.map((value, index) => ({
             time: `${index}:00`, // X-axis: hour
@@ -181,6 +180,11 @@ const UvTrend = () => {
                             placeholder="Enter location"
                             value={location}
                             onChange={(e) => dispatch(setLocation(e.target.value))}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" && location.trim() !== "" && selectedDate) {
+                                    fetchLocationData(location);
+                                }
+                            }}
                         />
                     </div>
                     <div className="flex items-center text-center gap-8">
@@ -208,13 +212,20 @@ const UvTrend = () => {
             </div>
             <div className="flex h-1/2 w-full rounded-xl p-4 bg-gray-200 gap-4">
                 <div className="flex-col items-center justify-center h-full w-1/2">
-                    <div className="flex flex-col items-start w-full">
-                        <p className="text-lg font-semibold text-purple-700">
-                            {formattedDateTime}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                            {location ? location : "Enter location above"}
-                        </p>
+                    <div className="flex justify-between w-full">
+                        <div className="flex flex-col items-start">
+                            <p className="text-lg font-semibold text-purple-700">
+                                {formattedDateTime}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                                {location ? location : "Enter location above"}
+                            </p>
+                        </div>
+                        <div className="flex flex-col items-end">
+                            <p className="text-lg font-semibold text-purple-700">
+                                Current UV:{currentUV}
+                            </p>
+                        </div>
                     </div>
                     <UVIndexChart />
                 </div>
@@ -233,7 +244,7 @@ const UvTrend = () => {
                     </div>
                     <button
                         onClick={() => router.push("/pages/personalization")}
-                        className="bg-[#063490] text-white font-semibold px-2 py-2 rounded-lg hover:bg-[#063490] transition">
+                        className="bg-purple-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-purple-700 transition">
                         See your personalized solutions
                     </button>
                 </div>

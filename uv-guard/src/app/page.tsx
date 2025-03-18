@@ -45,7 +45,7 @@ export default function Home() {
         <div className="flex-1/3 flex items-end justify-end h-full py-4 px-3">
           <button
             onClick={() => router.push("/pages/uvTrend")}
-            className="bg-[#063490] text-white font-semibold px-6 py-2 rounded-lg hover:bg-[#063490] transition">
+            className="bg-purple-600 text-white font-semibold px-10 py-4 rounded-lg hover:bg-purple-700 transition">
             Check UV levels based on your location
           </button>
         </div>

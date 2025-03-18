@@ -20,10 +20,10 @@ const UVIndexChart = () => {
   const uvIndex = useAppSelector((state) => state.uv.uvIndex);
 
   const maxUV = 12; // Maximum UV index
-  const cx = 170;
+  const cx = 150;
   const cy = 150;
-  const iR = 80;
-  const oR = 100;
+  const iR = 100;
+  const oR = 120;
   const dotSize = 16; // Indicator dot size
 
   // Calculate UV Cell data

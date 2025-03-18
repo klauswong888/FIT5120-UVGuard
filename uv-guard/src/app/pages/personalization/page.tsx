@@ -15,6 +15,7 @@ const Personalization = () => {
 
     // ✅ Read state from Redux
     const { skinTone, recommendation, isSafeToGoOut, reapplyTime } = useAppSelector(state => state.uv);
+    const currentUV = useAppSelector(state => state.uv.uvIndex);
     const location = useAppSelector(state => state.uv.location);
     const selectedDate = useAppSelector(state => state.uv.date);
     const currentTime = useAppSelector(state => state.uv.time);
@@ -28,10 +29,6 @@ const Personalization = () => {
             setFormattedDateTime(`${currentTime}, ${selectedDate}`);
         }
     }, [selectedDate, currentTime]);
-
-    useEffect(() => {
-        console.log("Redux Skin Tone:", skinTone);
-    }, [skinTone]);
 
     return (
         <div className="flex flex-col items-center h-full gap-6">
