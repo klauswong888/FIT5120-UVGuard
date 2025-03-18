@@ -122,15 +122,23 @@ const UvTrend = () => {
         const updateTime = () => {
             const validTimezone = timezone ?? "Australia/Melbourne";
             const now = moment().tz(validTimezone);
-            dispatch(setTime(now.format("HH:mm")));
-            dispatch(setDate(moment(selectedDate).tz(validTimezone).format("YYYY-MM-DD")));
+            const newTime = now.format("HH:mm");
+            const newDate = now.format("YYYY-MM-DD"); // ✅ 直接用 now 格式化
+
+            // 🛑 只有当状态真的变化时才 dispatch，避免 Redux 无限循环
+            if (currentTime !== newTime) {
+                dispatch(setTime(newTime));
+            }
+            if (selectedDate === newDate) {
+                dispatch(setDate(newDate));
+            }
         };
         updateTime();
 
         const interval = setInterval(updateTime, 60000);
 
         return () => clearInterval(interval);
-    }, [timezone, selectedDate, dispatch]);
+    }, [timezone, selectedDate, dispatch, currentTime]);
 
     /** 📊 Format UV data */
     const formatUvData = (rawData: number[]) => {
@@ -153,7 +161,7 @@ const UvTrend = () => {
         dispatch(setUVIndex(currentUVIndex ? currentUVIndex.uvIndex : 0));
 
         setCurrentUV(currentUVIndex ? currentUVIndex.uvIndex : 0);
-    }, [uvData, timezone]);
+    }, [uvData, timezone, dispatch]);
 
     useEffect(() => {
         if (selectedDate && currentTime) {
@@ -181,7 +189,9 @@ const UvTrend = () => {
                             type="date"
                             className="border rounded-md px-2 py-1 text-center"
                             value={selectedDate}
-                            onChange={(e) => dispatch(setDate(e.target.value))}
+                            onChange={(e) => {
+                                dispatch(setDate(e.target.value));
+                            }}
                         />
                     </div>
                 </div>
