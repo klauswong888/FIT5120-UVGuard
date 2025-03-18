@@ -114,9 +114,15 @@ const Personalization = () => {
                 {/* Text */}
                 <div className="w-1/4 text-center">
                     <p className="text-sm font-semibold">You will need to reapply sunscreen in</p>
-                    <p className="text-2xl md:text-3xl font-bold text-orange-500 mt-1">
-                        {nextReminderIn !== null ? `${nextReminderIn} mins` : "N/A Minutes"}
-                    </p>
+                    {nextReminderIn !== null ? (
+                        <p className="text-2xl md:text-3xl font-bold text-orange-500 mt-1">
+                            {`${nextReminderIn} mins`}
+                        </p>
+                    ) : (
+                        <p className="text-2xl md:text-xl font-bold text-gray-500 mt-1">
+                            Please set your reminder first
+                        </p>
+                    )}
                 </div>
 
                 {/* Button */}
