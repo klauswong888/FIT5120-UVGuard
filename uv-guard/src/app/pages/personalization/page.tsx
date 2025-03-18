@@ -36,18 +36,16 @@ const Personalization = () => {
             {/* Skin tone image + dropdown selection area */}
             <div className="flex flex-col md:flex-row justify-between px-2 py-2 gap-4 md:gap-8 w-full items-center">
                 {/* Left side image */}
-                <div className="w-full md:w-[60%] max-w-[900px]">
-                    <Image
-                        src="/skin_tone.png"
-                        alt="Skin tone categories"
-                        width={500}
-                        height={300}
-                        className="w-full h-auto rounded-xl shadow-md"
-                    />
-                </div>
-
-                {/* Right side selection box (vertical arrangement) */}
                 <div className="h-full md:w-[45%] max-w-[500px] flex flex-col justify-between px-4 py-4 gap-4">
+                    {/* Location input box */}
+                    <div className="flex flex-col">
+                        <div className="text-xl font-semibold mb-1">Your Current Location:</div>
+                        <div
+                            className="px-3 py-2 text-lg"
+                        >
+                            {location}
+                        </div>
+                    </div>
                     {/* Skin tone dropdown menu */}
                     <div className="flex flex-col">
                         <label className="text-sm font-semibold mb-1">Skin Tone</label>
@@ -65,18 +63,16 @@ const Personalization = () => {
                             <option value="Deeply pigmented">Deeply pigmented</option>
                         </select>
                     </div>
-
-                    {/* Location input box */}
-                    <div className="flex flex-col">
-                        <label className="text-sm font-semibold mb-1">Location</label>
-                        <input
-                            type="text"
-                            value={location}
-                            readOnly // ✅ Controlled by Redux, manual modification prohibited
-                            className="border px-3 py-2 rounded-md text-sm"
-                            placeholder="Enter your city"
-                        />
-                    </div>
+                </div>
+                {/* Right side selection box (vertical arrangement) */}
+                <div className="w-full md:w-[60%] max-w-[900px]">
+                    <Image
+                        src="/skin_tone.png"
+                        alt="Skin tone categories"
+                        width={500}
+                        height={300}
+                        className="w-full h-auto rounded-xl shadow-md"
+                    />
                 </div>
             </div>
 
