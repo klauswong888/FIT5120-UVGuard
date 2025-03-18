@@ -20,6 +20,8 @@ const Personalization = () => {
     const currentTime = useAppSelector(state => state.uv.time);
     const nextReminderIn = useAppSelector(state => state.reminder.nextReminderIn);
     const [formattedDateTime, setFormattedDateTime] = useState("Loading...");
+    const uvIndex = useAppSelector((state) => state.uv.uvIndex);
+
 
     useEffect(() => {
         if (selectedDate && currentTime) {
@@ -34,7 +36,7 @@ const Personalization = () => {
     return (
         <div className="flex flex-col items-center h-full gap-6">
             {/* Skin tone image + dropdown selection area */}
-            <div className="flex flex-col md:flex-row justify-between px-2 py-2 gap-4 md:gap-8 w-full items-center">
+            <div className="flex flex-col md:flex-row justify-between px-2 py-2 gap-4 md:gap-8 w-full items-center h-[30%]">
                 {/* Left side image */}
                 <div className="h-full md:w-[45%] max-w-[500px] flex flex-col justify-between px-4 py-4 gap-4">
                     {/* Location input box */}
@@ -64,8 +66,8 @@ const Personalization = () => {
                         </select>
                     </div>
                 </div>
-                {/* Right side selection box (vertical arrangement) */}
-                <div className="w-full md:w-[60%] max-w-[900px]">
+                {/* SKin tone checker */}
+                <div className="w-full md:w-[60%] max-w-[600px]">
                     <label className="block w-full text-center text-large font-semibold mb-3">Check your skin tone</label>
                     <Image
                         src="/skin_tone.png"
@@ -78,12 +80,17 @@ const Personalization = () => {
             </div>
 
             {/* UV index circle & recommendation content */}
-            <div className="flex w-full h-1/2-screen max-h-[50vh] rounded-xl p-4 justify-between bg-gray-200 gap-4">
+            <div className="flex w-full h-[50%] max-h-[50vh] rounded-xl p-4 justify-between bg-gray-200 gap-4">
                 {/* UV index */}
                 <div className="w-1/2 flex flex-col items-start justify-start h-full">
-                    <div className="w-full mb-2">
-                        <p className="text-lg font-semibold text-purple-700">{formattedDateTime}</p>
-                        <p className="text-sm text-gray-600">{location || "Loading location..."}</p>
+                    <div className="flex w-full justify-start mb-2">
+                        <div className="flex flex-col mr-20">
+                            <p className="text-lg font-semibold text-purple-700">{formattedDateTime}</p>
+                            <p className="text-sm text-gray-600">{location || "Loading location..."}</p>
+                        </div>
+                        <div className="flex flex-col justify-center items-start">
+                            <p className="text-xl font-bold text-purple-900">Current UV index: {uvIndex}</p>
+                        </div>
                     </div>
                     <UVIndexChart />
                 </div>
@@ -101,7 +108,7 @@ const Personalization = () => {
             </div>
 
             {/* Countdown section */}
-            <div className="w-full flex flex-row items-center justify-between bg-white p-4 rounded-xl shadow-md gap-4">
+            <div className="w-full flex flex-row items-center justify-between bg-white p-4 rounded-xl shadow-md gap-4 h-[20%]">
                 {/* Icon */}
                 <div className="w-1/4 flex items-center justify-center">
                     <Image src="/timer.png" alt="timer" width={40} height={40} />
