@@ -48,13 +48,13 @@ const Personalization = () => {
                     </div>
                     {/* Skin tone dropdown menu */}
                     <div className="flex flex-col">
-                        <label className="text-sm font-semibold mb-1">Skin Tone</label>
+                        <label className="text-xl font-semibold mb-1">Skin Tone</label>
                         <select
                             value={skinTone || ""}
                             onChange={(e) => dispatch(setSkinTone(e.target.value))}
                             className="border px-3 py-2 rounded-md text-sm"
                         >
-                            <option value="">Select skin tone</option>
+                            <option value="">Select your skin tone</option>
                             <option value="Very fair">Very fair</option>
                             <option value="Fair">Fair</option>
                             <option value="Light brown">Light brown</option>
@@ -66,6 +66,7 @@ const Personalization = () => {
                 </div>
                 {/* Right side selection box (vertical arrangement) */}
                 <div className="w-full md:w-[60%] max-w-[900px]">
+                    <label className="block w-full text-center text-large font-semibold mb-3">Check your skin tone</label>
                     <Image
                         src="/skin_tone.png"
                         alt="Skin tone categories"
@@ -76,96 +77,55 @@ const Personalization = () => {
                 </div>
             </div>
 
-            {/* UV index circle & recommendation content & countdown */}
-            <div className="flex h-1/2 w-full rounded-xl p-4 bg-gray-200 gap-4">
-                <div className="flex-col items-center justify-center h-full w-1/3">
-                    <div className="flex flex-col items-start w-full">
-                        <p className="text-lg font-semibold text-purple-700">
-                            {formattedDateTime}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                            {location || "Loading location..."}
-                        </p>
+            {/* UV index circle & recommendation content */}
+            <div className="flex w-full h-1/2-screen max-h-[50vh] rounded-xl p-4 justify-between bg-gray-200 gap-4">
+                {/* UV index */}
+                <div className="w-1/2 flex flex-col items-start justify-start h-full">
+                    <div className="w-full mb-2">
+                        <p className="text-lg font-semibold text-purple-700">{formattedDateTime}</p>
+                        <p className="text-sm text-gray-600">{location || "Loading location..."}</p>
                     </div>
                     <UVIndexChart />
                 </div>
 
-                {/* Recommendation information */}
-                <div className="w-1/3 h-full bg-[#E0DBFA] flex flex-col items-center py-2">
-                    <div className="h-full flex flex-col text-center items-center justify-center">
-                        <div>
-                            <h2 className="text-xl font-bold text-purple-900">
-                                {isSafeToGoOut ? "You can go outside safely!" : "Avoid the sun!!"}
-                            </h2>
-                        </div>
-                        <div className="flex flex-1 items-center justify-center">
-                            <ul className="mt-4 text-left list-disc list-inside text-black">
-                                <li>{recommendation}</li>
-                                <li>Reapply sunscreen every {reapplyTime} minutes.</li>
-                            </ul>
-                        </div>
-                    </div>
+                {/* Recommendation */}
+                <div className="w-1/2 h-full bg-[#E0DBFA] flex flex-col items-center justify-center p-4 rounded-xl">
+                    <h2 className="text-2xl font-bold text-purple-900 mb-4">
+                        {isSafeToGoOut ? "You can go outside safely!" : "Avoid the sun!!"}
+                    </h2>
+                    <ul className="text-left list-disc list-inside text-black space-y-2">
+                        <li>{recommendation}</li>
+                        <li>Reapply sunscreen every {reapplyTime} minutes.</li>
+                    </ul>
                 </div>
+            </div>
 
-                {/* Countdown & button */}
-                <div className="w-1/3 h-full flex-1 flex flex-col justify-center items-center text-center">
+            {/* Countdown section */}
+            <div className="w-full flex flex-row items-center justify-between bg-white p-4 rounded-xl shadow-md gap-4">
+                {/* Icon */}
+                <div className="w-1/4 flex items-center justify-center">
                     <Image src="/timer.png" alt="timer" width={40} height={40} />
-                    <p className="text-sm mt-2">You will need to reapply sunscreen in</p>
-                    <p className="text-3xl font-bold text-orange-500 mt-2">
-                        {nextReminderIn !== null ? `${nextReminderIn} mins` : "N/A"}
+                </div>
+
+                {/* Text */}
+                <div className="w-1/4 text-center">
+                    <p className="text-sm font-semibold">You will need to reapply sunscreen in</p>
+                    <p className="text-2xl md:text-3xl font-bold text-orange-500 mt-1">
+                        {nextReminderIn !== null ? `${nextReminderIn} mins` : "N/A Minutes"}
                     </p>
-                    <button 
+                </div>
+
+                {/* Button */}
+                <div className="w-1/2 flex items-center justify-center">
+                    <button
                         onClick={() => router.push("/pages/reminder")}
-                        className="mt-4 bg-purple-700 text-white px-4 py-2 rounded-md font-semibold">Set your reminder</button>
+                        className="bg-purple-700 text-white px-30 py-4 rounded-md font-semibold text-lg w-full md:w-auto"
+                    >
+                        Set your reminder
+                    </button>
                 </div>
             </div>
 
-            {/* Facts section */}
-            <div className="h-1/3 w-full border-t px-6 pt-4 text-sm">
-                {/* Text part */}
-                <div className="w-full text-center text-purple-900 font-bold text-lg mb-4">
-                    Facts you need to know
-                </div>
-
-                {/* Image part */}
-                <div className="flex justify-between gap-4">
-                    {/* UV Rays image and text */}
-                    <div className="flex flex-col items-center">
-                        <Image src="/UVImpact.jpeg" alt="UV Rays" width={400} height={300} objectFit="cover" />
-                        <div className="text-center mt-2">
-                            <a href="https://healthmatch.io/blog/top-20-skin-cancer-hot-spots-in-the-world-and-why-theyre-on-the-list" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                                Different UV rays and their depth of impact on the skin
-                            </a>
-                        </div>
-                    </div>
-
-                    {/* Skin Cancer image and text */}
-                    <div className="flex flex-col items-center">
-                        <Image src="/skin_cancer.jpeg" alt="Skin Cancer" width={400} height={300} objectFit="cover" />
-                        <div className="text-center mt-2">
-                            <a href="https://www.spotscreen.com.au/info-centre/skin-cancer-information/skin-cancer-facts/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                                Key facts about skin cancer in Australia
-                            </a>
-                        </div>
-                    </div>
-
-                    {/* UV Danger image and text */}
-                    <div className="flex flex-col items-center">
-                        <Image src="/UVDanger.jpg" alt="UV Danger" width={400} height={300} objectFit="cover" />
-                        <div className="text-center mt-2">
-                            <a href="https://mieye.com/protecting-eyes-harmful-uv-rays/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                                The danger of UV
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                {/* Learn more link */}
-                <p className="mt-2 text-right text-sm text-blue-700 cursor-pointer">
-                    <a href="https://www.cancer.org.au/cancer-information/causes-and-prevention/sun-safety" target="_blank" rel="noopener noreferrer" className="hover:underline">
-                        &gt;&gt;&gt;Learn more about how to protect your skin
-                    </a>
-                </p>
-            </div>
 
         </div >
     );
