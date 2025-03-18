@@ -129,7 +129,7 @@ const UvTrend = () => {
             if (currentTime !== newTime) {
                 dispatch(setTime(newTime));
             }
-            if (selectedDate !== newDate) {
+            if (selectedDate === newDate) {
                 dispatch(setDate(newDate));
             }
         };
@@ -189,7 +189,9 @@ const UvTrend = () => {
                             type="date"
                             className="border rounded-md px-2 py-1 text-center"
                             value={selectedDate}
-                            onChange={(e) => dispatch(setDate(e.target.value))}
+                            onChange={(e) => {
+                                dispatch(setDate(e.target.value));
+                            }}
                         />
                     </div>
                 </div>
