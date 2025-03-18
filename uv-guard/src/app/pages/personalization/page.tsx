@@ -15,6 +15,7 @@ const Personalization = () => {
 
     // ✅ Read state from Redux
     const { skinTone, recommendation, isSafeToGoOut, reapplyTime } = useAppSelector(state => state.uv);
+    const currentUV = useAppSelector(state => state.uv.uvIndex);
     const location = useAppSelector(state => state.uv.location);
     const selectedDate = useAppSelector(state => state.uv.date);
     const currentTime = useAppSelector(state => state.uv.time);
@@ -26,10 +27,6 @@ const Personalization = () => {
             setFormattedDateTime(`${currentTime}, ${selectedDate}`);
         }
     }, [selectedDate, currentTime]);
-
-    useEffect(() => {
-        console.log("Redux Skin Tone:", skinTone);
-    }, [skinTone]);
 
     return (
         <div className="flex flex-col items-center h-full gap-6">
@@ -79,13 +76,20 @@ const Personalization = () => {
             {/* UV index circle & recommendation content & countdown */}
             <div className="flex h-1/2 w-full rounded-xl p-4 bg-gray-200 gap-4">
                 <div className="flex-col items-center justify-center h-full w-1/3">
-                    <div className="flex flex-col items-start w-full">
-                        <p className="text-lg font-semibold text-purple-700">
-                            {formattedDateTime}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                            {location || "Loading location..."}
-                        </p>
+                    <div className="flex justify-between w-full">
+                        <div className="flex flex-col items-start">
+                            <p className="text-lg font-semibold text-purple-700">
+                                {formattedDateTime}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                                {location ? location : "Enter location above"}
+                            </p>
+                        </div>
+                        <div className="flex flex-col items-end">
+                            <p className="text-lg font-semibold text-purple-700">
+                                Current UV:{currentUV}
+                            </p>
+                        </div>
                     </div>
                     <UVIndexChart />
                 </div>
