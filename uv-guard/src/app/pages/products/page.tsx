@@ -8,13 +8,11 @@ import { GiTreehouse } from "react-icons/gi";
 
 const uvTableConfig = {
   columns: [
-    { key: "sunglasses", label: "Use UV Blocking Sunglasses", icon: React.createElement(PiSunglassesBold, { className: "text-2xl text-purple-600" }) },
-    { key: "sunscreen", label: "Wear Sunscreen", icon: React.createElement(FaBottleDroplet, { className: "text-2xl text-yellow-500" }) },
-    { key: "hat", label: "Wear a Hat", icon: React.createElement(PiBaseballCapFill, { className: "text-2xl text-brown-600" }) },
-    { key: "clothing", label: "Wear Protective Clothing", icon: React.createElement(FaTshirt, { className: "text-2xl text-blue-600" }) },
-    { key: "shade", label: "Stay in Shade Near Midday", icon: React.createElement(GiTreehouse, { className: "text-2xl text-green-500" }) },
-    { key: "reduce_sun", label: "Reduce Time in the Sun", icon: React.createElement(FaUmbrella, { className: "text-2xl text-red-500" }) },
-    { key: "avoid_sun", label: "Avoid the Sun Between 10am-2pm", icon: React.createElement(FaHouse, { className: "text-2xl text-gray-700" }) },
+    { key: "sunglasses", label: "Wear Headgear / Sunglasses", icon: React.createElement(PiSunglassesBold, { className: "text-2xl text-purple-600" }) },
+    { key: "sunscreen", label: "Apply Sunscreen", icon: React.createElement(FaBottleDroplet, { className: "text-2xl text-yellow-500" }) },
+    { key: "shade", label: "Seek Shade", icon: React.createElement(GiTreehouse, { className: "text-2xl text-green-500" }) },
+    { key: "reduce_sun", label: "Take Umbrella", icon: React.createElement(FaUmbrella, { className: "text-2xl text-red-500" }) },
+    { key: "avoid_sun", label: "Stay Indoors", icon: React.createElement(FaHouse, { className: "text-2xl text-gray-700" }) },
   ],
   rows: [
     { key: "low", label: "1-2 (Low)" },
@@ -26,7 +24,7 @@ const uvTableConfig = {
 };
 
 const uvProtectionData = {
-  low: { sunglasses: true, sunscreen: true, hat: true, clothing: true, shade: false, reduce_sun: false, avoid_sun: false },
+  low: { sunglasses: true, sunscreen: false, hat: true, clothing: true, shade: false, reduce_sun: false, avoid_sun: false },
   moderate: { sunglasses: true, sunscreen: true, hat: true, clothing: true, shade: false, reduce_sun: false, avoid_sun: false },
   high: { sunglasses: true, sunscreen: true, hat: true, clothing: true, shade: true, reduce_sun: false, avoid_sun: false },
   very_high: { sunglasses: true, sunscreen: true, hat: true, clothing: true, shade: true, reduce_sun: true, avoid_sun: false },
